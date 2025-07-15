@@ -10,6 +10,7 @@ import { Review } from "../models/Review";
 import { Participant } from "../models/Participant";
 import { Message } from "../models/Message";
 import { Conversation } from "../models/Conversation";
+import { Notification } from "../models/Notification";
 
 dotenv.config();
 
@@ -26,6 +27,7 @@ export const sequelize = new Sequelize(process.env.DATABASE_URL!, {
     Participant,
     Message,
     Conversation,
+    Notification,
   ],
 });
 

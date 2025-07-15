@@ -179,11 +179,13 @@ export const rsvpToMatch = async (req: AuthenticatedRequest, res: Response) => {
       return res.status(404).json({ message: "Match not found" });
     }
 
-    const alreadyRSVPed = await MatchParticipant.findOne({
+    // Look for participant including soft-deleted entries
+    const existingParticipant = await MatchParticipant.findOne({
       where: { userId, matchId },
+      paranoid: false,
     });
 
-    if (alreadyRSVPed) {
+    if (existingParticipant && !existingParticipant.deletedAt) {
       return res.status(409).json({ message: "Already RSVP’d to this match" });
     }
 
@@ -193,7 +195,11 @@ export const rsvpToMatch = async (req: AuthenticatedRequest, res: Response) => {
       return res.status(409).json({ message: "Match is full" });
     }
 
-    await MatchParticipant.create({ userId, matchId });
+    if (existingParticipant && existingParticipant.deletedAt) {
+      await existingParticipant.restore();
+    } else {
+      await MatchParticipant.create({ userId, matchId });
+    }
 
     eventBus.emit("RSVP_CREATED", { userId, matchId });
 

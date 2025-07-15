@@ -2,8 +2,8 @@ import { Request, Response } from "express";
 import { User } from "../models/User";
 import { generateAccessToken } from "../utils/jwt";
 import { verifyRefreshToken, generateRefreshToken } from "../utils/jwt";
-import { body, validationResult } from 'express-validator';
-import { AuthenticatedRequest } from '../middlewares/auth.middleware';
+import { body, validationResult } from "express-validator";
+import { AuthenticatedRequest } from "../middlewares/auth.middleware";
 
 export const registerUser = async (req: Request, res: Response) => {
   try {
@@ -114,25 +114,31 @@ export const refreshAccessToken = async (req: Request, res: Response) => {
 };
 
 export const logoutUser = async (req: Request, res: Response) => {
-  res.clearCookie('refreshToken', {
+  res.clearCookie("refreshToken", {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'strict',
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "strict",
   });
 
   res.sendStatus(204); // No Content
 };
 
-export const getCurrentUser = async (req: AuthenticatedRequest, res: Response) => {
+export const getCurrentUser = async (
+  req: AuthenticatedRequest,
+  res: Response
+) => {
   try {
+    console.log("💡 In getCurrentUser - req.user:", req.user); // ✅ must NOT be undefined
+
     const user = await User.findByPk(req.user?.id);
     if (!user) {
-      return res.status(404).json({ message: 'User not found' });
+      return res.status(404).json({ message: "User not found" });
     }
 
     res.status(200).json(user);
   } catch (err) {
-    res.status(500).json({ message: 'Internal server error' });
+    console.error("Error in getCurrentUser:", err);
+    res.status(500).json({ message: "Internal server error" });
   }
 };
 

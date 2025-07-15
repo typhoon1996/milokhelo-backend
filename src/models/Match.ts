@@ -56,6 +56,6 @@ export class Match extends Model {
   })
   declare status: "invited" | "joined" | "left";
 
-  @HasMany(() => MatchParticipant)
-  participants!: MatchParticipant[];
+  @HasMany(() => MatchParticipant, { as: "participants" })
+  declare participants: MatchParticipant[];
 }

@@ -2,7 +2,12 @@ import { Request, Response } from "express";
 import { AuthenticatedRequest } from "../middlewares/auth.middleware";
 import { User } from "../models/User";
 import { Connection } from "../models/Connection";
-
+import { Op } from "sequelize";
+/**
+ * User Controller
+ * Handles user-related operations such as fetching user details, suggested users,
+ * sending connection requests, and managing connections.
+ */
 export const getSuggestedUsers = async (
   req: AuthenticatedRequest,
   res: Response
@@ -17,7 +22,7 @@ export const getSuggestedUsers = async (
     const users = await User.findAll({
       where: {
         id: {
-          $notIn: [currentUserId, ...existingConnectionIds],
+          [Op.notIn]: [currentUserId, ...existingConnectionIds],
         },
       },
       limit: 10,

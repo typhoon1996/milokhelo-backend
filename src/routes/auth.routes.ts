@@ -1,4 +1,4 @@
-import { Router } from 'express';
+import { Router } from "express";
 import {
   registerUser,
   loginUser,
@@ -9,46 +9,46 @@ import {
   googleCallback,
   facebookAuthRedirect,
   facebookCallback,
-} from '../controllers/auth.controller';
-import { body, validationResult } from 'express-validator';
-
-
+} from "../controllers/auth.controller";
+import { body } from "express-validator";
+import { authenticateJWT } from "../middlewares/auth.middleware"; // ✅ add this
 
 const router = Router();
 
-// POST /auth/register
+// Register
 router.post(
-  '/register',
+  "/register",
   [
-    body('name').notEmpty().withMessage('Name is required'),
-    body('email').isEmail().withMessage('Valid email is required'),
-    body('password')
+    body("name").notEmpty().withMessage("Name is required"),
+    body("email").isEmail().withMessage("Valid email is required"),
+    body("password")
       .isLength({ min: 6 })
-      .withMessage('Password must be at least 6 characters'),
+      .withMessage("Password must be at least 6 characters"),
   ],
   registerUser
 );
 
-// POST /auth/login
+// Login
 router.post(
-  '/login',
+  "/login",
   [
-    body('email').isEmail().withMessage('Valid email is required'),
-    body('password').notEmpty().withMessage('Password is required'),
+    body("email").isEmail().withMessage("Valid email is required"),
+    body("password").notEmpty().withMessage("Password is required"),
   ],
   loginUser
 );
 
+// Token and logout
+router.post("/refresh-token", refreshAccessToken);
+router.post("/logout", logoutUser);
 
-router.post('/refresh-token', refreshAccessToken);
-router.post('/login', loginUser);
-router.post('/logout', logoutUser);
-router.get('/me', getCurrentUser);
+// ✅ Protect this route with JWT middleware
+router.get("/me", authenticateJWT, getCurrentUser);
 
-// OAuth routes
-router.get('/google', googleAuthRedirect);
-router.get('/google/callback', googleCallback);
-router.get('/facebook', facebookAuthRedirect);
-router.get('/facebook/callback', facebookCallback);
+// OAuth (stubbed)
+router.get("/google", googleAuthRedirect);
+router.get("/google/callback", googleCallback);
+router.get("/facebook", facebookAuthRedirect);
+router.get("/facebook/callback", facebookCallback);
 
 export default router;
