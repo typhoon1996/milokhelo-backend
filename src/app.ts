@@ -6,7 +6,7 @@ import dotenv from "dotenv";
 import compression from "compression";
 import cookieParser from "cookie-parser";
 
-import { errorHandler, notFound } from "./middlewares/error.middleware";
+import { errorHandler, notFound, handleUnhandledRejection, handleUncaughtException } from "./middlewares/errorHandler";
 import bullBoardAdapter from "./queues/queue-dashboard";
 
 // Load environment variables
@@ -55,5 +55,9 @@ app.use("/admin/queues", bullBoardAdapter.getRouter());
 // ---------- Fallbacks ----------
 app.use(notFound);
 app.use(errorHandler);
+
+// ---------- Global Error Handling ----------
+process.on('unhandledRejection', handleUnhandledRejection);
+process.on('uncaughtException', handleUncaughtException);
 
 export default app;

@@ -4,7 +4,10 @@ import {
   loginUser,
   refreshAccessToken,
   logoutUser,
+  logoutAllDevices,
   getCurrentUser,
+  getActiveSessions,
+  revokeSession,
   googleAuthRedirect,
   googleCallback,
   facebookAuthRedirect,
@@ -42,8 +45,11 @@ router.post(
 router.post("/refresh-token", refreshAccessToken);
 router.post("/logout", logoutUser);
 
-// ✅ Protect this route with JWT middleware
+// ✅ Protect these routes with JWT middleware
 router.get("/me", authenticateJWT, getCurrentUser);
+router.post("/logout-all", authenticateJWT, logoutAllDevices);
+router.get("/sessions", authenticateJWT, getActiveSessions);
+router.delete("/sessions/:sessionId", authenticateJWT, revokeSession);
 
 // OAuth (stubbed)
 router.get("/google", googleAuthRedirect);
