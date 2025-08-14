@@ -1,0 +1,548 @@
+{
+  "info": {
+    "_postman_id": "milokhelo-backend-collection",
+    "name": "MiloKhelo Backend API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register - Success",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Test User\",\n  \"email\": \"testuser1@example.com\",\n  \"password\": \"password123\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/auth/register", "host": ["{{baseUrl}}"], "path": ["api", "auth", "register"] }
+          }
+        },
+        {
+          "name": "Register - Duplicate Email (Edge)",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Test User\",\n  \"email\": \"testuser1@example.com\",\n  \"password\": \"password123\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/auth/register", "host": ["{{baseUrl}}"], "path": ["api", "auth", "register"] }
+          }
+        },
+        {
+          "name": "Register - Missing Fields (Negative)",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"testuser2@example.com\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/auth/register", "host": ["{{baseUrl}}"], "path": ["api", "auth", "register"] }
+          }
+        },
+        {
+          "name": "Login - Success",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"testuser1@example.com\",\n  \"password\": \"password123\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/auth/login", "host": ["{{baseUrl}}"], "path": ["api", "auth", "login"] }
+          }
+        },
+        {
+          "name": "Login - Wrong Password (Negative)",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"testuser1@example.com\",\n  \"password\": \"wrongpass\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/auth/login", "host": ["{{baseUrl}}"], "path": ["api", "auth", "login"] }
+          }
+        },
+        {
+          "name": "Login - Missing Fields (Negative)",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"testuser1@example.com\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/auth/login", "host": ["{{baseUrl}}"], "path": ["api", "auth", "login"] }
+          }
+        },
+        {
+          "name": "Refresh Token - Success",
+          "request": {
+            "method": "POST",
+            "url": { "raw": "{{baseUrl}}/api/auth/refresh-token", "host": ["{{baseUrl}}"], "path": ["api", "auth", "refresh-token"] }
+          }
+        },
+        {
+          "name": "Refresh Token - No Token (Negative)",
+          "request": {
+            "method": "POST",
+            "url": { "raw": "{{baseUrl}}/api/auth/refresh-token", "host": ["{{baseUrl}}"], "path": ["api", "auth", "refresh-token"] }
+          }
+        },
+        {
+          "name": "Get Current User - Success",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Authorization", "value": "Bearer {{accessToken}}" } ],
+            "url": { "raw": "{{baseUrl}}/api/auth/me", "host": ["{{baseUrl}}"], "path": ["api", "auth", "me"] }
+          }
+        },
+        {
+          "name": "Get Current User - No Token (Negative)",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/auth/me", "host": ["{{baseUrl}}"], "path": ["api", "auth", "me"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "Get Suggested Users - Success",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Authorization", "value": "Bearer {{accessToken}}" } ],
+            "url": { "raw": "{{baseUrl}}/api/users/suggested", "host": ["{{baseUrl}}"], "path": ["api", "users", "suggested"] }
+          }
+        },
+        {
+          "name": "Get Suggested Users - Unauthorized (Negative)",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/users/suggested", "host": ["{{baseUrl}}"], "path": ["api", "users", "suggested"] }
+          }
+        },
+        {
+          "name": "Send Connection Request - Success",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Authorization", "value": "Bearer {{accessToken}}" } ],
+            "url": { "raw": "{{baseUrl}}/api/users/connections/{{otherUserId}}", "host": ["{{baseUrl}}"], "path": ["api", "users", "connections", "{{otherUserId}}"] }
+          }
+        },
+        {
+          "name": "Send Connection Request - Self (Edge)",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Authorization", "value": "Bearer {{accessToken}}" } ],
+            "url": { "raw": "{{baseUrl}}/api/users/connections/{{myUserId}}", "host": ["{{baseUrl}}"], "path": ["api", "users", "connections", "{{myUserId}}"] }
+          }
+        },
+        {
+          "name": "Send Connection Request - Duplicate (Edge)",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Authorization", "value": "Bearer {{accessToken}}" } ],
+            "url": { "raw": "{{baseUrl}}/api/users/connections/{{otherUserId}}", "host": ["{{baseUrl}}"], "path": ["api", "users", "connections", "{{otherUserId}}"] }
+          }
+        },
+        {
+          "name": "Get Connections - Success",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Authorization", "value": "Bearer {{accessToken}}" } ],
+            "url": { "raw": "{{baseUrl}}/api/users/connections", "host": ["{{baseUrl}}"], "path": ["api", "users", "connections"] }
+          }
+        },
+        {
+          "name": "Get Connections - Unauthorized (Negative)",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/users/connections", "host": ["{{baseUrl}}"], "path": ["api", "users", "connections"] }
+          }
+        },
+        {
+          "name": "Accept Connection - Success",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Authorization", "value": "Bearer {{accessToken}}" } ],
+            "url": { "raw": "{{baseUrl}}/api/users/connections/{{connectionId}}/accept", "host": ["{{baseUrl}}"], "path": ["api", "users", "connections", "{{connectionId}}", "accept"] }
+          }
+        },
+        {
+          "name": "Accept Connection - Not Authorized (Negative)",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Authorization", "value": "Bearer {{accessToken}}" } ],
+            "url": { "raw": "{{baseUrl}}/api/users/connections/{{notMyConnectionId}}/accept", "host": ["{{baseUrl}}"], "path": ["api", "users", "connections", "{{notMyConnectionId}}", "accept"] }
+          }
+        },
+        {
+          "name": "Reject Connection - Success",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Authorization", "value": "Bearer {{accessToken}}" } ],
+            "url": { "raw": "{{baseUrl}}/api/users/connections/{{connectionId}}/reject", "host": ["{{baseUrl}}"], "path": ["api", "users", "connections", "{{connectionId}}", "reject"] }
+          }
+        },
+        {
+          "name": "Reject Connection - Not Authorized (Negative)",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Authorization", "value": "Bearer {{accessToken}}" } ],
+            "url": { "raw": "{{baseUrl}}/api/users/connections/{{notMyConnectionId}}/reject", "host": ["{{baseUrl}}"], "path": ["api", "users", "connections", "{{notMyConnectionId}}", "reject"] }
+          }
+        },
+        {
+          "name": "Update Preferences - Success",
+          "request": {
+            "method": "PUT",
+            "header": [ { "key": "Authorization", "value": "Bearer {{accessToken}}" }, { "key": "Content-Type", "value": "application/json" } ],
+            "body": { "mode": "raw", "raw": "{\n  \"receiveMatchReminders\": false,\n  \"receiveEmailNotifications\": false\n}" },
+            "url": { "raw": "{{baseUrl}}/api/users/preferences", "host": ["{{baseUrl}}"], "path": ["api", "users", "preferences"] }
+          }
+        },
+        {
+          "name": "Update Preferences - Unauthorized (Negative)",
+          "request": {
+            "method": "PUT",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "body": { "mode": "raw", "raw": "{\n  \"receiveMatchReminders\": false\n}" },
+            "url": { "raw": "{{baseUrl}}/api/users/preferences", "host": ["{{baseUrl}}"], "path": ["api", "users", "preferences"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Matches",
+      "item": [
+        {
+          "name": "Create Match - Success",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Authorization", "value": "Bearer {{accessToken}}" }, { "key": "Content-Type", "value": "application/json" } ],
+            "body": { "mode": "raw", "raw": "{\n  \"title\": \"Friendly Match\",\n  \"sport\": \"Football\",\n  \"location\": \"Stadium\",\n  \"startTime\": \"2025-07-20T10:00:00Z\",\n  \"skillLevel\": \"Intermediate\",\n  \"maxPlayers\": 10\n}" },
+            "url": { "raw": "{{baseUrl}}/api/matches", "host": ["{{baseUrl}}"], "path": ["api", "matches"] }
+          }
+        },
+        {
+          "name": "Create Match - Missing Fields (Negative)",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Authorization", "value": "Bearer {{accessToken}}" }, { "key": "Content-Type", "value": "application/json" } ],
+            "body": { "mode": "raw", "raw": "{\n  \"title\": \"No Location\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/matches", "host": ["{{baseUrl}}"], "path": ["api", "matches"] }
+          }
+        },
+        {
+          "name": "Create Match - Unauthorized (Negative)",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "body": { "mode": "raw", "raw": "{\n  \"title\": \"No Auth\",\n  \"sport\": \"Football\",\n  \"location\": \"Stadium\",\n  \"startTime\": \"2025-07-20T10:00:00Z\",\n  \"skillLevel\": \"Intermediate\",\n  \"maxPlayers\": 10\n}" },
+            "url": { "raw": "{{baseUrl}}/api/matches", "host": ["{{baseUrl}}"], "path": ["api", "matches"] }
+          }
+        },
+        {
+          "name": "Get Matches - Success",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/matches", "host": ["{{baseUrl}}"], "path": ["api", "matches"] }
+          }
+        },
+        {
+          "name": "Get My Matches - Success",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Authorization", "value": "Bearer {{accessToken}}" } ],
+            "url": { "raw": "{{baseUrl}}/api/matches/my", "host": ["{{baseUrl}}"], "path": ["api", "matches", "my"] }
+          }
+        },
+        {
+          "name": "Get My Matches - Unauthorized (Negative)",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/matches/my", "host": ["{{baseUrl}}"], "path": ["api", "matches", "my"] }
+          }
+        },
+        {
+          "name": "Get Match Details - Success",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/matches/{{matchId}}", "host": ["{{baseUrl}}"], "path": ["api", "matches", "{{matchId}}"] }
+          }
+        },
+        {
+          "name": "Get Match Details - Not Found (Edge)",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/matches/invalid-id", "host": ["{{baseUrl}}"], "path": ["api", "matches", "invalid-id"] }
+          }
+        },
+        {
+          "name": "RSVP to Match - Success",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Authorization", "value": "Bearer {{accessToken}}" } ],
+            "url": { "raw": "{{baseUrl}}/api/matches/{{matchId}}/rsvp", "host": ["{{baseUrl}}"], "path": ["api", "matches", "{{matchId}}", "rsvp"] }
+          }
+        },
+        {
+          "name": "RSVP to Match - Already RSVP'd (Edge)",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Authorization", "value": "Bearer {{accessToken}}" } ],
+            "url": { "raw": "{{baseUrl}}/api/matches/{{matchId}}/rsvp", "host": ["{{baseUrl}}"], "path": ["api", "matches", "{{matchId}}", "rsvp"] }
+          }
+        },
+        {
+          "name": "RSVP to Match - Full (Edge)",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Authorization", "value": "Bearer {{accessToken}}" } ],
+            "url": { "raw": "{{baseUrl}}/api/matches/{{fullMatchId}}/rsvp", "host": ["{{baseUrl}}"], "path": ["api", "matches", "{{fullMatchId}}", "rsvp"] }
+          }
+        },
+        {
+          "name": "Cancel RSVP - Success",
+          "request": {
+            "method": "DELETE",
+            "header": [ { "key": "Authorization", "value": "Bearer {{accessToken}}" } ],
+            "url": { "raw": "{{baseUrl}}/api/matches/{{matchId}}/rsvp", "host": ["{{baseUrl}}"], "path": ["api", "matches", "{{matchId}}", "rsvp"] }
+          }
+        },
+        {
+          "name": "Cancel RSVP - Not RSVP'd (Edge)",
+          "request": {
+            "method": "DELETE",
+            "header": [ { "key": "Authorization", "value": "Bearer {{accessToken}}" } ],
+            "url": { "raw": "{{baseUrl}}/api/matches/{{notJoinedMatchId}}/rsvp", "host": ["{{baseUrl}}"], "path": ["api", "matches", "{{notJoinedMatchId}}", "rsvp"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Teams",
+      "item": [
+        {
+          "name": "Create Team - Success",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Authorization", "value": "Bearer {{accessToken}}" }, { "key": "Content-Type", "value": "application/json" } ],
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Team A\",\n  \"sport\": \"Football\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/teams", "host": ["{{baseUrl}}"], "path": ["api", "teams"] }
+          }
+        },
+        {
+          "name": "Create Team - Missing Fields (Negative)",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Authorization", "value": "Bearer {{accessToken}}" }, { "key": "Content-Type", "value": "application/json" } ],
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"No Sport\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/teams", "host": ["{{baseUrl}}"], "path": ["api", "teams"] }
+          }
+        },
+        {
+          "name": "Create Team - Unauthorized (Negative)",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"No Auth\",\n  \"sport\": \"Football\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/teams", "host": ["{{baseUrl}}"], "path": ["api", "teams"] }
+          }
+        },
+        {
+          "name": "List Teams - Success",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/teams", "host": ["{{baseUrl}}"], "path": ["api", "teams"] }
+          }
+        },
+        {
+          "name": "Get Team Details - Success",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/teams/{{teamId}}", "host": ["{{baseUrl}}"], "path": ["api", "teams", "{{teamId}}"] }
+          }
+        },
+        {
+          "name": "Get Team Details - Not Found (Edge)",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/teams/invalid-id", "host": ["{{baseUrl}}"], "path": ["api", "teams", "invalid-id"] }
+          }
+        },
+        {
+          "name": "Join Team - Success",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Authorization", "value": "Bearer {{accessToken}}" } ],
+            "url": { "raw": "{{baseUrl}}/api/teams/{{teamId}}/join", "host": ["{{baseUrl}}"], "path": ["api", "teams", "{{teamId}}", "join"] }
+          }
+        },
+        {
+          "name": "Join Team - Already Requested (Edge)",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Authorization", "value": "Bearer {{accessToken}}" } ],
+            "url": { "raw": "{{baseUrl}}/api/teams/{{teamId}}/join", "host": ["{{baseUrl}}"], "path": ["api", "teams", "{{teamId}}", "join"] }
+          }
+        },
+        {
+          "name": "Join Team - Not Found (Edge)",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Authorization", "value": "Bearer {{accessToken}}" } ],
+            "url": { "raw": "{{baseUrl}}/api/teams/invalid-id/join", "host": ["{{baseUrl}}"], "path": ["api", "teams", "invalid-id", "join"] }
+          }
+        },
+        {
+          "name": "Resend Invite (Admin) - Success",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Authorization", "value": "Bearer {{accessToken}}" } ],
+            "url": { "raw": "{{baseUrl}}/api/teams/invites/{{inviteId}}/resend", "host": ["{{baseUrl}}"], "path": ["api", "teams", "invites", "{{inviteId}}", "resend"] }
+          }
+        },
+        {
+          "name": "Resend Invite (Admin) - Not Found (Edge)",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Authorization", "value": "Bearer {{accessToken}}" } ],
+            "url": { "raw": "{{baseUrl}}/api/teams/invites/invalid-id/resend", "host": ["{{baseUrl}}"], "path": ["api", "teams", "invites", "invalid-id", "resend"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Reviews",
+      "item": [
+        {
+          "name": "Submit Match Review - Success",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Authorization", "value": "Bearer {{accessToken}}" }, { "key": "Content-Type", "value": "application/json" } ],
+            "body": { "mode": "raw", "raw": "{\n  \"rating\": 5,\n  \"comment\": \"Great match!\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/reviews/match/{{matchId}}", "host": ["{{baseUrl}}"], "path": ["api", "reviews", "match", "{{matchId}}"] }
+          }
+        },
+        {
+          "name": "Submit Match Review - Already Reviewed (Edge)",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Authorization", "value": "Bearer {{accessToken}}" }, { "key": "Content-Type", "value": "application/json" } ],
+            "body": { "mode": "raw", "raw": "{\n  \"rating\": 4,\n  \"comment\": \"Second review\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/reviews/match/{{matchId}}", "host": ["{{baseUrl}}"], "path": ["api", "reviews", "match", "{{matchId}}"] }
+          }
+        },
+        {
+          "name": "Submit Match Review - Not Found (Edge)",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Authorization", "value": "Bearer {{accessToken}}" }, { "key": "Content-Type", "value": "application/json" } ],
+            "body": { "mode": "raw", "raw": "{\n  \"rating\": 5,\n  \"comment\": \"No match\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/reviews/match/invalid-id", "host": ["{{baseUrl}}"], "path": ["api", "reviews", "match", "invalid-id"] }
+          }
+        },
+        {
+          "name": "Get Match Reviews - Success",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Authorization", "value": "Bearer {{accessToken}}" } ],
+            "url": { "raw": "{{baseUrl}}/api/reviews/match/{{matchId}}", "host": ["{{baseUrl}}"], "path": ["api", "reviews", "match", "{{matchId}}"] }
+          }
+        },
+        {
+          "name": "Get Match Reviews - Not Found (Edge)",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Authorization", "value": "Bearer {{accessToken}}" } ],
+            "url": { "raw": "{{baseUrl}}/api/reviews/match/invalid-id", "host": ["{{baseUrl}}"], "path": ["api", "reviews", "match", "invalid-id"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Chat",
+      "item": [
+        {
+          "name": "Get Conversations - Success",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Authorization", "value": "Bearer {{accessToken}}" } ],
+            "url": { "raw": "{{baseUrl}}/api/chat/conversations", "host": ["{{baseUrl}}"], "path": ["api", "chat", "conversations"] }
+          }
+        },
+        {
+          "name": "Get Conversations - Unauthorized (Negative)",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/chat/conversations", "host": ["{{baseUrl}}"], "path": ["api", "chat", "conversations"] }
+          }
+        },
+        {
+          "name": "Get Messages - Success",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Authorization", "value": "Bearer {{accessToken}}" } ],
+            "url": { "raw": "{{baseUrl}}/api/chat/conversations/{{conversationId}}/messages", "host": ["{{baseUrl}}"], "path": ["api", "chat", "conversations", "{{conversationId}}", "messages"] }
+          }
+        },
+        {
+          "name": "Get Messages - Not Participant (Negative)",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Authorization", "value": "Bearer {{accessToken}}" } ],
+            "url": { "raw": "{{baseUrl}}/api/chat/conversations/{{notMyConversationId}}/messages", "host": ["{{baseUrl}}"], "path": ["api", "chat", "conversations", "{{notMyConversationId}}", "messages"] }
+          }
+        },
+        {
+          "name": "Reset Unread Count - Success",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Authorization", "value": "Bearer {{accessToken}}" } ],
+            "url": { "raw": "{{baseUrl}}/api/chat/{{conversationId}}/reset-unread", "host": ["{{baseUrl}}"], "path": ["api", "chat", "{{conversationId}}", "reset-unread"] }
+          }
+        },
+        {
+          "name": "Reset Unread Count - Unauthorized (Negative)",
+          "request": {
+            "method": "POST",
+            "url": { "raw": "{{baseUrl}}/api/chat/{{conversationId}}/reset-unread", "host": ["{{baseUrl}}"], "path": ["api", "chat", "{{conversationId}}", "reset-unread"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Notifications",
+      "item": [
+        {
+          "name": "Get Notifications - Success",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Authorization", "value": "Bearer {{accessToken}}" } ],
+            "url": { "raw": "{{baseUrl}}/api/notifications", "host": ["{{baseUrl}}"], "path": ["api", "notifications"] }
+          }
+        },
+        {
+          "name": "Get Notifications - Unauthorized (Negative)",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/notifications", "host": ["{{baseUrl}}"], "path": ["api", "notifications"] }
+          }
+        },
+        {
+          "name": "Mark Notifications Read - Success",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Authorization", "value": "Bearer {{accessToken}}" }, { "key": "Content-Type", "value": "application/json" } ],
+            "body": { "mode": "raw", "raw": "{\n  \"notificationIds\": []\n}" },
+            "url": { "raw": "{{baseUrl}}/api/notifications/mark-read", "host": ["{{baseUrl}}"], "path": ["api", "notifications", "mark-read"] }
+          }
+        },
+        {
+          "name": "Mark Notifications Read - Unauthorized (Negative)",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "body": { "mode": "raw", "raw": "{\n  \"notificationIds\": []\n}" },
+            "url": { "raw": "{{baseUrl}}/api/notifications/mark-read", "host": ["{{baseUrl}}"], "path": ["api", "notifications", "mark-read"] }
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:3000" },
+    { "key": "accessToken", "value": "" }
+  ]
+}
