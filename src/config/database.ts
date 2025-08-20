@@ -11,6 +11,8 @@ import { Participant } from "../models/Participant";
 import { Message } from "../models/Message";
 import { Conversation } from "../models/Conversation";
 import { Notification } from "../models/Notification";
+import { RefreshToken } from "../models/RefreshToken";
+
 
 dotenv.config();
 
