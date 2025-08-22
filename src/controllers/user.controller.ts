@@ -81,11 +81,11 @@ export const getConnections = catchAsync(async (
 
   const connections = await Connection.findAll({
     where: {
-      [Op.or]: [{ requesterId: userId }, { targetId: userId }],
+      [Op.or]: [{ requesterId: userId }, { receiverId: userId }],
     },
     include: [
       { model: User, as: "requester", attributes: ["id", "name", "email"] },
-      { model: User, as: "target", attributes: ["id", "name", "email"] },
+      { model: User, as: "receiver", attributes: ["id", "name", "email"] },
     ],
   });
 

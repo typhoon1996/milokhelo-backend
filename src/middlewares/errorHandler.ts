@@ -22,8 +22,22 @@ export const errorHandler = (
   res: Response,
   next: NextFunction
 ) => {
-  let error = { ...err };
-  error.message = err.message;
+  // Create a new error object, copying all relevant properties
+  let error: any;
+  if (err instanceof AppError) {
+    error = new AppError(err.message, err.statusCode);
+    error.status = err.status;
+    error.errors = err.errors;
+  } else if (err instanceof Error) {
+    error = new AppError(err.message, (err as any).statusCode || 500);
+    error.name = err.name;
+    error.stack = err.stack;
+    // Copy any additional enumerable properties
+    Object.assign(error, err);
+  } else {
+    // If it's a plain object, just copy its properties
+    error = Object.assign({}, err);
+  }
 
   // Log error details
   logError(err, req);

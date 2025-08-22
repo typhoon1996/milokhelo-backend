@@ -48,8 +48,8 @@ export class RefreshToken extends BaseModel {
   @Column({ defaultValue: false, type: DataType.BOOLEAN })
   declare isRevoked: boolean;
 
-  @Column(DataType.STRING)
-  declare revokedAt?: string;
+  @Column(DataType.DATE)
+  declare revokedAt?: Date;
 
   @Column(DataType.STRING)
   declare revokedReason?: string; // e.g., "logout", "compromise", "expired"
@@ -76,7 +76,7 @@ export class RefreshToken extends BaseModel {
    */
   revoke(reason: string = "manual") {
     this.isRevoked = true;
-    this.revokedAt = new Date().toISOString();
+    this.revokedAt = new Date();
     this.revokedReason = reason;
   }
 }

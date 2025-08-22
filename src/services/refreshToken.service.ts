@@ -1,6 +1,7 @@
 import { RefreshToken } from "../models/RefreshToken";
 import { User } from "../models/User";
 import { generateRefreshToken, generateTokenFamily, verifyRefreshToken } from "../utils/jwt";
+import { Op } from "sequelize";
 
 export class RefreshTokenService {
   /**
@@ -140,7 +141,7 @@ export class RefreshTokenService {
     const expiredTokens = await RefreshToken.findAll({
       where: {
         expiresAt: {
-          [require("sequelize").Op.lt]: new Date(),
+          [Op.lt]: new Date(),
         },
         isRevoked: false,
       },

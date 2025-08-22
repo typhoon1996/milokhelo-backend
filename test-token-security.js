@@ -1,5 +1,7 @@
-const { RefreshTokenService } = require('./dist/services/refreshToken.service');
-const { generateAccessToken, generateRefreshToken } = require('./dist/utils/jwt');
+const path = require('path');
+const BUILD_DIR = process.env.BUILD_DIR || 'dist';
+const { RefreshTokenService } = require(path.join('./', BUILD_DIR, 'services', 'refreshToken.service'));
+const { generateAccessToken, generateRefreshToken } = require(path.join('./', BUILD_DIR, 'utils', 'jwt'));
 
 // Simple test to verify the implementation
 async function testTokenSecurity() {
