@@ -41,13 +41,13 @@ import reviewRoutes from "./routes/review.routes";
 import chatRoutes from "./routes/chat.routes";
 import notificationRoutes from "./routes/notification.routes";
 
-app.use("/api/auth", authRoutes);
-app.use("/api/users", userRoutes);
-app.use("/api/matches", matchRoutes);
-app.use("/api/teams", teamRoutes);
-app.use("/api/reviews", reviewRoutes);
-app.use("/api/chat", chatRoutes);
-app.use("/api/notifications", notificationRoutes);
+app.use("/api/v1/auth", authRoutes);
+app.use("/api/v1/users", userRoutes);
+app.use("/api/v1/matches", matchRoutes);
+app.use("/api/v1/teams", teamRoutes);
+app.use("/api/v1/reviews", reviewRoutes);
+app.use("/api/v1/chat", chatRoutes);
+app.use("/api/v1/notifications", notificationRoutes);
 
 // ---------- Admin Queue Dashboard ----------
 app.use("/admin/queues", bullBoardAdapter.getRouter());
