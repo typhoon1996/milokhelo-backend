@@ -10,6 +10,7 @@ import {
 } from "sequelize-typescript";
 import bcrypt from "bcrypt";
 import { MatchParticipant } from "./MatchParticipant";
+import { RefreshToken } from "./RefreshToken";
 import { BaseModel } from "./BaseModel";
 
 @Table({
@@ -38,6 +39,9 @@ export class User extends BaseModel {
 
   @HasMany(() => MatchParticipant)
   declare matchParticipants: MatchParticipant[];
+
+  @HasMany(() => RefreshToken)
+  declare refreshTokens: RefreshToken[];
 
   /**
    * Hash password before creation or update
