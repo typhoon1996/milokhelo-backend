@@ -1,14 +1,7 @@
-import {
-  Table,
-  Column,
-  DataType,
-  ForeignKey,
-  BelongsTo,
-} from "sequelize-typescript";
-import { BaseModel } from "./BaseModel";
-import { User } from "./User";
-import { Team } from "./Team";
-import { Index } from "sequelize-typescript";
+import { Table, Column, DataType, ForeignKey, BelongsTo, Index } from "sequelize-typescript";
+import { BaseModel } from "@/models/BaseModel";
+import { User } from "@/models/User";
+import { Team } from "@/models/Team";
 
 export enum TeamMemberStatus {
   PENDING = "pending",

@@ -10,10 +10,10 @@ import {
   UpdatedAt,
   HasMany,
 } from "sequelize-typescript";
-import { User } from "./User";
+import { User } from "@/models/User";
 import { v4 as uuidv4 } from "uuid";
 
-import { MatchParticipant } from "./MatchParticipant";
+import { MatchParticipant } from "@/models/MatchParticipant";
 
 @Table
 export class Match extends Model {

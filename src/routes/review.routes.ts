@@ -1,9 +1,6 @@
 import { Router } from "express";
-import {
-  submitMatchReview,
-  getMatchReviews,
-} from "../controllers/review.controller";
-import { authenticateJWT } from "../middlewares/auth.middleware";
+import { submitMatchReview, getMatchReviews } from "@/controllers/review.controller";
+import { authenticateJWT } from "@/middlewares/auth.middleware";
 
 const router = Router();
 

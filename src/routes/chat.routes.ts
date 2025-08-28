@@ -1,10 +1,6 @@
 import { Router } from "express";
-import {
-  getConversations,
-  getMessages,
-  resetUnreadCount,
-} from "../controllers/chat.controller";
-import { authenticateJWT } from "../middlewares/auth.middleware";
+import { getConversations, getMessages, resetUnreadCount } from "@/controllers/chat.controller";
+import { authenticateJWT } from "@/middlewares/auth.middleware";
 
 const router = Router();
 

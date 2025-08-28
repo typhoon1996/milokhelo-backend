@@ -12,9 +12,9 @@ import {
   googleCallback,
   facebookAuthRedirect,
   facebookCallback,
-} from "../controllers/auth.controller";
+} from "@/controllers/auth.controller";
 import { body } from "express-validator";
-import { authenticateJWT } from "../middlewares/auth.middleware"; // ✅ add this
+import { authenticateJWT } from "@/middlewares/auth.middleware"; // ✅ add this
 
 const router = Router();
 
@@ -24,11 +24,9 @@ router.post(
   [
     body("name").notEmpty().withMessage("Name is required"),
     body("email").isEmail().withMessage("Valid email is required"),
-    body("password")
-      .isLength({ min: 6 })
-      .withMessage("Password must be at least 6 characters"),
+    body("password").isLength({ min: 6 }).withMessage("Password must be at least 6 characters"),
   ],
-  registerUser
+  registerUser,
 );
 
 // Login
@@ -38,7 +36,7 @@ router.post(
     body("email").isEmail().withMessage("Valid email is required"),
     body("password").notEmpty().withMessage("Password is required"),
   ],
-  loginUser
+  loginUser,
 );
 
 // Token and logout

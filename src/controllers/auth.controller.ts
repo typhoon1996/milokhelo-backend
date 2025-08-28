@@ -1,17 +1,17 @@
 import { Request, Response, NextFunction } from "express";
-import { User } from "../models/User";
-import { generateAccessToken } from "../utils/jwt";
-import { RefreshTokenService } from "../services/refreshToken.service";
+import { User } from "@/models/User";
+import { generateAccessToken } from "@/utils/jwt";
+import { RefreshTokenService } from "@/services/refreshToken.service";
 import { body, validationResult } from "express-validator";
-import { AuthenticatedRequest } from "../middlewares/auth.middleware";
-import { catchAsync } from "../utils/catchAsync";
-import { ValidationError, ConflictError, UnauthorizedError, NotFoundError } from "../utils/AppError";
+import { AuthenticatedRequest } from "@/middlewares/auth.middleware";
+import { catchAsync } from "@/utils/catchAsync";
+import { ValidationError, ConflictError, UnauthorizedError, NotFoundError } from "@/utils/AppError";
 
 export const registerUser = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
   // Validate request
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    throw new ValidationError('Validation failed');
+    throw new ValidationError("Validation failed");
   }
 
   const { name, email, password } = req.body;
@@ -39,17 +39,17 @@ export const registerUser = catchAsync(async (req: Request, res: Response, next:
       maxAge: 7 * 24 * 60 * 60 * 1000,
     })
     .status(201)
-    .json({ 
+    .json({
       success: true,
-      accessToken, 
-      user 
+      accessToken,
+      user,
     });
 });
 
 export const loginUser = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    throw new ValidationError('Validation failed');
+    throw new ValidationError("Validation failed");
   }
 
   const { email, password } = req.body;
@@ -77,52 +77,54 @@ export const loginUser = catchAsync(async (req: Request, res: Response, next: Ne
       maxAge: 7 * 24 * 60 * 60 * 1000,
     })
     .status(200)
-    .json({ 
+    .json({
       success: true,
-      accessToken, 
-      user 
+      accessToken,
+      user,
     });
 });
 
-export const refreshAccessToken = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-  const token = req.cookies?.refreshToken;
+export const refreshAccessToken = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const token = req.cookies?.refreshToken;
 
-  if (!token) {
-    throw new UnauthorizedError("No refresh token");
-  }
+    if (!token) {
+      throw new UnauthorizedError("No refresh token");
+    }
 
-  // Validate token using service
-  const tokenValidation = await RefreshTokenService.validateToken(token);
-  if (!tokenValidation) {
-    throw new UnauthorizedError("Invalid or expired token");
-  }
+    // Validate token using service
+    const tokenValidation = await RefreshTokenService.validateToken(token);
+    if (!tokenValidation) {
+      throw new UnauthorizedError("Invalid or expired token");
+    }
 
-  const { user } = tokenValidation;
+    const { user } = tokenValidation;
 
-  // Generate new access token
-  const accessToken = generateAccessToken(user.id);
+    // Generate new access token
+    const accessToken = generateAccessToken(user.id);
 
-  // Rotate refresh token (invalidate old, create new)
-  const newRefreshTokenData = await RefreshTokenService.rotateToken(token);
+    // Rotate refresh token (invalidate old, create new)
+    const newRefreshTokenData = await RefreshTokenService.rotateToken(token);
 
-  // Set new refresh token cookie
-  res
-    .cookie("refreshToken", newRefreshTokenData.token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-    })
-    .status(200)
-    .json({ 
-      success: true,
-      accessToken 
-    });
-});
+    // Set new refresh token cookie
+    res
+      .cookie("refreshToken", newRefreshTokenData.token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "strict",
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+      })
+      .status(200)
+      .json({
+        success: true,
+        accessToken,
+      });
+  },
+);
 
 export const logoutUser = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
   const token = req.cookies?.refreshToken;
-  
+
   if (token) {
     // Revoke the refresh token in database
     await RefreshTokenService.revokeToken(token, "logout");
@@ -137,118 +139,130 @@ export const logoutUser = catchAsync(async (req: Request, res: Response, next: N
 
   res.status(200).json({
     success: true,
-    message: "Logged out successfully"
+    message: "Logged out successfully",
   });
 });
 
-export const logoutAllDevices = catchAsync(async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
-  if (!req.user?.id) {
-    throw new UnauthorizedError("User not authenticated");
-  }
+export const logoutAllDevices = catchAsync(
+  async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+    if (!req.user?.id) {
+      throw new UnauthorizedError("User not authenticated");
+    }
 
-  // Revoke all refresh tokens for the user
-  const revokedCount = await RefreshTokenService.revokeAllUserTokens(req.user.id, "logout_all");
+    // Revoke all refresh tokens for the user
+    const revokedCount = await RefreshTokenService.revokeAllUserTokens(req.user.id, "logout_all");
 
-  // Clear the current cookie
-  res.clearCookie("refreshToken", {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "strict",
-  });
+    // Clear the current cookie
+    res.clearCookie("refreshToken", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+    });
 
-  res.status(200).json({ 
-    success: true,
-    message: "Logged out from all devices", 
-    revokedCount 
-  });
-});
+    res.status(200).json({
+      success: true,
+      message: "Logged out from all devices",
+      revokedCount,
+    });
+  },
+);
 
-export const getActiveSessions = catchAsync(async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
-  if (!req.user?.id) {
-    throw new UnauthorizedError("User not authenticated");
-  }
+export const getActiveSessions = catchAsync(
+  async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+    if (!req.user?.id) {
+      throw new UnauthorizedError("User not authenticated");
+    }
 
-  const activeTokens = await RefreshTokenService.getUserActiveTokens(req.user.id);
-  
-  const sessions = activeTokens.map(token => ({
-    id: token.id,
-    createdAt: token.createdAt,
-    expiresAt: token.expiresAt,
-    deviceInfo: token.revokedReason || "Unknown", // Could be enhanced with device fingerprinting
-  }));
+    const activeTokens = await RefreshTokenService.getUserActiveTokens(req.user.id);
 
-  res.status(200).json({ 
-    success: true,
-    sessions 
-  });
-});
+    const sessions = activeTokens.map((token) => ({
+      id: token.id,
+      createdAt: token.createdAt,
+      expiresAt: token.expiresAt,
+      deviceInfo: token.revokedReason || "Unknown", // Could be enhanced with device fingerprinting
+    }));
 
-export const revokeSession = catchAsync(async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
-  if (!req.user?.id) {
-    throw new UnauthorizedError("User not authenticated");
-  }
+    res.status(200).json({
+      success: true,
+      sessions,
+    });
+  },
+);
 
-  const { sessionId } = req.params;
-  
-  // Find the token and verify it belongs to the user
-  const token = await RefreshTokenService.getUserActiveTokens(req.user.id);
-  const targetToken = token.find(t => t.id === sessionId);
-  
-  if (!targetToken) {
-    throw new NotFoundError("Session not found");
-  }
+export const revokeSession = catchAsync(
+  async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+    if (!req.user?.id) {
+      throw new UnauthorizedError("User not authenticated");
+    }
 
-  // Revoke the specific session
-  await RefreshTokenService.revokeToken(targetToken.token, "manual_revoke");
+    const { sessionId } = req.params;
 
-  res.status(200).json({ 
-    success: true,
-    message: "Session revoked successfully" 
-  });
-});
+    // Find the token and verify it belongs to the user
+    const token = await RefreshTokenService.getUserActiveTokens(req.user.id);
+    const targetToken = token.find((t) => t.id === sessionId);
 
-export const getCurrentUser = catchAsync(async (
-  req: AuthenticatedRequest,
-  res: Response,
-  next: NextFunction
-) => {
-  console.log("💡 In getCurrentUser - req.user:", req.user); // ✅ must NOT be undefined
+    if (!targetToken) {
+      throw new NotFoundError("Session not found");
+    }
 
-  const user = await User.findByPk(req.user?.id);
-  if (!user) {
-    throw new NotFoundError("User not found");
-  }
+    // Revoke the specific session
+    await RefreshTokenService.revokeToken(targetToken.token, "manual_revoke");
 
-  res.status(200).json({
-    success: true,
-    user
-  });
-});
+    res.status(200).json({
+      success: true,
+      message: "Session revoked successfully",
+    });
+  },
+);
 
-export const googleAuthRedirect = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-  res.status(501).json({ 
-    success: false,
-    message: "Not implemented: googleAuthRedirect" 
-  });
-});
+export const getCurrentUser = catchAsync(
+  async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+    console.log("💡 In getCurrentUser - req.user:", req.user); // ✅ must NOT be undefined
 
-export const googleCallback = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-  res.status(501).json({ 
-    success: false,
-    message: "Not implemented: googleCallback" 
-  });
-});
+    const user = await User.findByPk(req.user?.id);
+    if (!user) {
+      throw new NotFoundError("User not found");
+    }
 
-export const facebookAuthRedirect = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-  res.status(501).json({ 
-    success: false,
-    message: "Not implemented: facebookAuthRedirect" 
-  });
-});
+    res.status(200).json({
+      success: true,
+      user,
+    });
+  },
+);
 
-export const facebookCallback = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-  res.status(501).json({ 
-    success: false,
-    message: "Not implemented: facebookCallback" 
-  });
-});
+export const googleAuthRedirect = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    res.status(501).json({
+      success: false,
+      message: "Not implemented: googleAuthRedirect",
+    });
+  },
+);
+
+export const googleCallback = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    res.status(501).json({
+      success: false,
+      message: "Not implemented: googleCallback",
+    });
+  },
+);
+
+export const facebookAuthRedirect = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    res.status(501).json({
+      success: false,
+      message: "Not implemented: facebookAuthRedirect",
+    });
+  },
+);
+
+export const facebookCallback = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    res.status(501).json({
+      success: false,
+      message: "Not implemented: facebookCallback",
+    });
+  },
+);

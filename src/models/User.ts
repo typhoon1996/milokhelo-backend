@@ -9,9 +9,9 @@ import {
   HasMany,
 } from "sequelize-typescript";
 import bcrypt from "bcrypt";
-import { MatchParticipant } from "./MatchParticipant";
-import { RefreshToken } from "./RefreshToken";
-import { BaseModel } from "./BaseModel";
+import { MatchParticipant } from "@/models/MatchParticipant";
+import { RefreshToken } from "@/models/RefreshToken";
+import { BaseModel } from "@/models/BaseModel";
 
 @Table({
   tableName: "users",

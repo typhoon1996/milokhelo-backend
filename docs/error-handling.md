@@ -5,6 +5,7 @@ This document describes the comprehensive error handling system implemented in t
 ## Overview
 
 The error handling system consists of several components that work together to:
+
 - Catch and handle all errors (both synchronous and asynchronous)
 - Provide consistent JSON error responses
 - Log errors appropriately based on environment
@@ -26,17 +27,18 @@ export class AppError extends Error {
 }
 
 // Specific error types
-export class ValidationError extends AppError {}      // 400
-export class UnauthorizedError extends AppError {}   // 401
-export class ForbiddenError extends AppError {}      // 403
-export class NotFoundError extends AppError {}       // 404
-export class ConflictError extends AppError {}       // 409
+export class ValidationError extends AppError {} // 400
+export class UnauthorizedError extends AppError {} // 401
+export class ForbiddenError extends AppError {} // 403
+export class NotFoundError extends AppError {} // 404
+export class ConflictError extends AppError {} // 409
 export class TooManyRequestsError extends AppError {} // 429
-export class InternalServerError extends AppError {}  // 500
+export class InternalServerError extends AppError {} // 500
 export class ServiceUnavailableError extends AppError {} // 503
 ```
 
 #### Usage Example:
+
 ```typescript
 // Instead of returning error responses manually
 if (!user) {
@@ -58,17 +60,17 @@ The `catchAsync` utility wraps async controller functions to automatically catch
 export const getUser = async (req: Request, res: Response) => {
   try {
     const user = await User.findByPk(req.params.id);
-    if (!user) return res.status(404).json({ message: 'User not found' });
+    if (!user) return res.status(404).json({ message: "User not found" });
     res.json(user);
   } catch (error) {
-    res.status(500).json({ message: 'Internal server error' });
+    res.status(500).json({ message: "Internal server error" });
   }
 };
 
 // After (with catchAsync)
 export const getUser = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
   const user = await User.findByPk(req.params.id);
-  if (!user) throw new NotFoundError('User not found');
+  if (!user) throw new NotFoundError("User not found");
   res.json({ success: true, user });
 });
 ```
@@ -78,6 +80,7 @@ export const getUser = catchAsync(async (req: Request, res: Response, next: Next
 The central error handling middleware processes all errors and provides consistent responses:
 
 #### Error Response Format:
+
 ```json
 {
   "success": false,
@@ -98,6 +101,7 @@ The central error handling middleware processes all errors and provides consiste
 ```
 
 #### Handled Error Types:
+
 - **Sequelize Errors**: Validation, unique constraints, foreign keys, connection issues
 - **JWT Errors**: Invalid tokens, expired tokens
 - **File Upload Errors**: File size limits, unexpected fields
@@ -111,13 +115,14 @@ The system handles unhandled promise rejections and uncaught exceptions:
 
 ```typescript
 // In app.ts
-process.on('unhandledRejection', handleUnhandledRejection);
-process.on('uncaughtException', handleUncaughtException);
+process.on("unhandledRejection", handleUnhandledRejection);
+process.on("uncaughtException", handleUncaughtException);
 ```
 
 ## Implementation in Controllers
 
 ### Before (Traditional Error Handling):
+
 ```typescript
 export const createUser = async (req: Request, res: Response) => {
   try {
@@ -128,7 +133,7 @@ export const createUser = async (req: Request, res: Response) => {
 
     const { name, email } = req.body;
     const existing = await User.findOne({ where: { email } });
-    
+
     if (existing) {
       return res.status(409).json({ message: "Email already exists" });
     }
@@ -143,16 +148,17 @@ export const createUser = async (req: Request, res: Response) => {
 ```
 
 ### After (Centralized Error Handling):
+
 ```typescript
 export const createUser = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    throw new ValidationError('Validation failed');
+    throw new ValidationError("Validation failed");
   }
 
   const { name, email } = req.body;
   const existing = await User.findOne({ where: { email } });
-  
+
   if (existing) {
     throw new ConflictError("Email already exists");
   }
@@ -165,11 +171,13 @@ export const createUser = catchAsync(async (req: Request, res: Response, next: N
 ## Error Logging
 
 ### Development Mode:
+
 - Detailed error information including stack traces
 - Request details (URL, method, headers, body, etc.)
 - Full error context for debugging
 
 ### Production Mode:
+
 - Minimal error details for security
 - Essential information for monitoring
 - No sensitive data exposure
@@ -177,6 +185,7 @@ export const createUser = catchAsync(async (req: Request, res: Response, next: N
 ## Best Practices
 
 ### 1. Use Custom Error Classes
+
 ```typescript
 // Good
 if (!user) throw new NotFoundError("User not found");
@@ -186,6 +195,7 @@ if (!user) return res.status(404).json({ message: "User not found" });
 ```
 
 ### 2. Wrap All Async Controllers
+
 ```typescript
 // Good
 export const getUser = catchAsync(async (req, res, next) => {
@@ -203,6 +213,7 @@ export const getUser = async (req, res) => {
 ```
 
 ### 3. Consistent Response Format
+
 ```typescript
 // Success responses
 res.json({ success: true, data: result });
@@ -212,6 +223,7 @@ throw new ValidationError("Invalid input");
 ```
 
 ### 4. Proper HTTP Status Codes
+
 - `400` - Bad Request (validation errors)
 - `401` - Unauthorized (authentication required)
 - `403` - Forbidden (insufficient permissions)
@@ -231,23 +243,23 @@ throw new ValidationError("Invalid input");
 ## Testing Error Handling
 
 ### Test Custom Errors:
-```typescript
-import { NotFoundError } from '../utils/AppError';
 
-test('should throw NotFoundError for missing user', () => {
+```typescript
+import { NotFoundError } from "../utils/AppError";
+
+test("should throw NotFoundError for missing user", () => {
   expect(() => {
-    throw new NotFoundError('User not found');
+    throw new NotFoundError("User not found");
   }).toThrow(NotFoundError);
 });
 ```
 
 ### Test Error Responses:
+
 ```typescript
-test('should return 404 for missing user', async () => {
-  const response = await request(app)
-    .get('/api/users/nonexistent')
-    .expect(404);
-  
+test("should return 404 for missing user", async () => {
+  const response = await request(app).get("/api/users/nonexistent").expect(404);
+
   expect(response.body.success).toBe(false);
   expect(response.body.statusCode).toBe(404);
 });
@@ -256,11 +268,13 @@ test('should return 404 for missing user', async () => {
 ## Monitoring and Debugging
 
 ### Development Tools:
+
 - Detailed error logs with stack traces
 - Request context information
 - Interactive debugging support
 
 ### Production Monitoring:
+
 - Error rate tracking
 - Performance impact monitoring
 - Alert systems for critical errors
@@ -277,12 +291,14 @@ test('should return 404 for missing user', async () => {
 ## Migration Guide
 
 ### Step 1: Update Imports
+
 ```typescript
-import { catchAsync } from '../utils/catchAsync';
-import { ValidationError, NotFoundError } from '../utils/AppError';
+import { catchAsync } from "../utils/catchAsync";
+import { ValidationError, NotFoundError } from "../utils/AppError";
 ```
 
 ### Step 2: Wrap Controllers
+
 ```typescript
 // Before
 export const getUser = async (req, res) => { ... };
@@ -292,6 +308,7 @@ export const getUser = catchAsync(async (req, res, next) => { ... });
 ```
 
 ### Step 3: Replace Error Responses
+
 ```typescript
 // Before
 if (!user) return res.status(404).json({ message: "Not found" });
@@ -301,6 +318,7 @@ if (!user) throw new NotFoundError("User not found");
 ```
 
 ### Step 4: Remove Try-Catch Blocks
+
 ```typescript
 // Before
 try {

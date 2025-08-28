@@ -11,8 +11,8 @@ import {
   BelongsTo,
 } from "sequelize-typescript";
 import { v4 as uuidv4 } from "uuid";
-import { User } from "./User";
-import { Match } from "./Match";
+import { User } from "@/models/User";
+import { Match } from "@/models/Match";
 
 @Table
 export class Review extends Model {

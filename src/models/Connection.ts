@@ -7,8 +7,8 @@ import {
   Index,
   BeforeCreate,
 } from "sequelize-typescript";
-import { User } from "./User";
-import { BaseModel } from "./BaseModel";
+import { User } from "@/models/User";
+import { BaseModel } from "@/models/BaseModel";
 
 export enum ConnectionStatus {
   PENDING = "pending",

@@ -7,8 +7,8 @@ import {
   Index,
   BelongsTo,
 } from "sequelize-typescript";
-import { BaseModel } from "./BaseModel";
-import { User } from "./User";
+import { BaseModel } from "@/models/BaseModel";
+import { User } from "@/models/User";
 
 @Table({
   tableName: "refresh_tokens",

@@ -9,10 +9,10 @@ import {
   DeletedAt,
 } from "sequelize-typescript";
 
-export abstract class BaseModel<
-  T extends object = any,
-  T2 extends object = any
-> extends Model<T, T2> {
+export abstract class BaseModel<T extends object = any, T2 extends object = any> extends Model<
+  T,
+  T2
+> {
   @PrimaryKey
   @Default(DataType.UUIDV4)
   @Column(DataType.UUID)

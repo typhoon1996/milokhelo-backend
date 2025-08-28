@@ -1,14 +1,7 @@
-import {
-  Table,
-  Column,
-  Model,
-  DataType,
-  ForeignKey,
-  BelongsTo,
-} from "sequelize-typescript";
+import { Table, Column, Model, DataType, ForeignKey, BelongsTo } from "sequelize-typescript";
 
-import { User } from "./User";
-import { Match } from "./Match";
+import { User } from "@/models/User";
+import { Match } from "@/models/Match";
 
 @Table
 export class RSVP extends Model {
