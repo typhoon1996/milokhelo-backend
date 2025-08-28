@@ -1,6 +1,4 @@
-# 📑 `CODING_GUIDELINES.md`
-
-## 🧑‍💻 Coding Guidelines
+# 🧑‍💻 Coding Guidelines
 
 To maintain **code quality and consistency**, follow these rules.
 

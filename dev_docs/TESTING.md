@@ -1,6 +1,4 @@
-# 📑 `TESTING.md`
-
-## 🧪 Testing Guide
+# 🧪 Testing Guide
 
 Testing ensures reliability and prevents regressions.
 

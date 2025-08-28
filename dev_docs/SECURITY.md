@@ -1,6 +1,4 @@
-# 📑 `SECURITY.md`
-
-## 🔐 Security Guidelines
+# 🔐 Security Guidelines
 
 We follow **OWASP Top 10** practices.
 
