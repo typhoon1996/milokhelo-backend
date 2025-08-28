@@ -1,6 +1,4 @@
-# 📑 `TROUBLESHOOTING.md`
-
-## 🛠️ Troubleshooting Guide
+# 🛠️ Troubleshooting Guide
 
 Common issues & fixes.
 

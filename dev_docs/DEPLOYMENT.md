@@ -1,6 +1,4 @@
-# 📑 `DEPLOYMENT.md`
-
-## 🚀 Deployment Guide
+# 🚀 Deployment Guide
 
 This project uses **Docker** + **CI/CD** for deployment.
 
