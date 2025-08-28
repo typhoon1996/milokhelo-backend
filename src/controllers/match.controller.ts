@@ -1,24 +1,16 @@
 import { Request, Response } from "express";
-import { AuthenticatedRequest } from "../middlewares/auth.middleware";
-import { Match } from "../models/Match";
-import { MatchParticipant } from "../models/MatchParticipant";
+import { AuthenticatedRequest } from "@/middlewares/auth.middleware";
+import { Match } from "@/models/Match";
+import { MatchParticipant } from "@/models/MatchParticipant";
 import { Op } from "sequelize";
-import { User } from "../models/User";
-import { eventBus } from "../events/eventBus";
+import { User } from "@/models/User";
+import { eventBus } from "@/events/eventBus";
 
 export const createMatch = async (req: AuthenticatedRequest, res: Response) => {
   try {
-    const { title, sport, location, startTime, skillLevel, maxPlayers } =
-      req.body;
+    const { title, sport, location, startTime, skillLevel, maxPlayers } = req.body;
 
-    if (
-      !title ||
-      !sport ||
-      !location ||
-      !startTime ||
-      !skillLevel ||
-      !maxPlayers
-    ) {
+    if (!title || !sport || !location || !startTime || !skillLevel || !maxPlayers) {
       return res.status(400).json({ message: "All fields are required" });
     }
 
@@ -80,10 +72,7 @@ export const getMatches = async (req: Request, res: Response) => {
   }
 };
 
-export const getMyMatches = async (
-  req: AuthenticatedRequest,
-  res: Response
-) => {
+export const getMyMatches = async (req: AuthenticatedRequest, res: Response) => {
   try {
     const userId = req.user?.id!;
     const now = new Date();
@@ -114,9 +103,7 @@ export const getMyMatches = async (
     const allMatches = [...createdMatches, ...joinedMatches];
 
     // Split upcoming and past
-    const upcoming = allMatches.filter(
-      (match) => new Date(match.startTime) > now
-    );
+    const upcoming = allMatches.filter((match) => new Date(match.startTime) > now);
     const past = allMatches.filter((match) => new Date(match.startTime) <= now);
 
     res.status(200).json({ upcoming, past });
@@ -210,10 +197,7 @@ export const rsvpToMatch = async (req: AuthenticatedRequest, res: Response) => {
   }
 };
 
-export const cancelRsvpMatch = async (
-  req: AuthenticatedRequest,
-  res: Response
-) => {
+export const cancelRsvpMatch = async (req: AuthenticatedRequest, res: Response) => {
   try {
     const userId = req.user?.id!;
     const matchId = req.params.id;
@@ -223,9 +207,7 @@ export const cancelRsvpMatch = async (
     });
 
     if (!participant) {
-      return res
-        .status(404)
-        .json({ message: "You are not RSVP'd to this match" });
+      return res.status(404).json({ message: "You are not RSVP'd to this match" });
     }
 
     await participant.destroy();

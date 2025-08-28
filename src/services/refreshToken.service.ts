@@ -1,6 +1,6 @@
-import { RefreshToken } from "../models/RefreshToken";
-import { User } from "../models/User";
-import { generateRefreshToken, generateTokenFamily, verifyRefreshToken } from "../utils/jwt";
+import { RefreshToken } from "@/models/RefreshToken";
+import { User } from "@/models/User";
+import { generateRefreshToken, generateTokenFamily, verifyRefreshToken } from "@/utils/jwt";
 import { Op } from "sequelize";
 
 export class RefreshTokenService {
@@ -35,7 +35,7 @@ export class RefreshTokenService {
     try {
       // Verify JWT signature and expiration
       const payload = verifyRefreshToken(token);
-      
+
       // Check if token exists in database and is valid
       const dbToken = await RefreshToken.findOne({
         where: { token },
@@ -62,7 +62,7 @@ export class RefreshTokenService {
   static async rotateToken(oldToken: string) {
     try {
       const payload = verifyRefreshToken(oldToken);
-      
+
       // Find the old token in database
       const oldDbToken = await RefreshToken.findOne({
         where: { token: oldToken },

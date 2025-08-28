@@ -1,14 +1,7 @@
-import {
-  Table,
-  Column,
-  DataType,
-  ForeignKey,
-  BelongsTo,
-  Index,
-} from "sequelize-typescript";
-import { BaseModel } from "./BaseModel";
-import { User } from "./User";
-import { Match } from "./Match";
+import { Table, Column, DataType, ForeignKey, BelongsTo, Index } from "sequelize-typescript";
+import { BaseModel } from "@/models/BaseModel";
+import { User } from "@/models/User";
+import { Match } from "@/models/Match";
 
 @Table({
   tableName: "match_participants",

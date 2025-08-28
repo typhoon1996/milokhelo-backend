@@ -1,14 +1,11 @@
 import { Request, Response } from "express";
-import { AuthenticatedRequest } from "../middlewares/auth.middleware";
-import { Participant } from "../models/Participant";
-import { Conversation } from "../models/Conversation";
-import { Message } from "../models/Message";
-import { User } from "../models/User";
+import { AuthenticatedRequest } from "@/middlewares/auth.middleware";
+import { Participant } from "@/models/Participant";
+import { Conversation } from "@/models/Conversation";
+import { Message } from "@/models/Message";
+import { User } from "@/models/User";
 
-export const getConversations = async (
-  req: AuthenticatedRequest,
-  res: Response
-) => {
+export const getConversations = async (req: AuthenticatedRequest, res: Response) => {
   const userId = req.user?.id!;
   try {
     const participantConversations = await Participant.findAll({
@@ -45,16 +42,10 @@ export const getMessages = async (req: AuthenticatedRequest, res: Response) => {
   }
 };
 
-export const resetUnreadCount = async (
-  req: AuthenticatedRequest,
-  res: Response
-) => {
+export const resetUnreadCount = async (req: AuthenticatedRequest, res: Response) => {
   const { conversationId } = req.params;
 
-  await Participant.update(
-    { unreadCount: 0 },
-    { where: { userId: req.user?.id, conversationId } }
-  );
+  await Participant.update({ unreadCount: 0 }, { where: { userId: req.user?.id, conversationId } });
 
   res.status(200).json({ message: "Unread count reset" });
 };

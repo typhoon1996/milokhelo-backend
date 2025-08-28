@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
-import { Match } from "../models/Match";
-import { Review } from "../models/Review";
-import { AuthenticatedRequest } from "../middlewares/auth.middleware";
-import { User } from "../models/User";
+import { Match } from "@/models/Match";
+import { Review } from "@/models/Review";
+import { AuthenticatedRequest } from "@/middlewares/auth.middleware";
+import { User } from "@/models/User";
 
 async function analyzeMatchFeedback(comment: string) {
   return {
@@ -12,10 +12,7 @@ async function analyzeMatchFeedback(comment: string) {
   };
 }
 
-export const submitMatchReview = async (
-  req: AuthenticatedRequest,
-  res: Response
-) => {
+export const submitMatchReview = async (req: AuthenticatedRequest, res: Response) => {
   try {
     const userId = req.user?.id!;
     const matchId = req.params.matchId;
@@ -30,9 +27,7 @@ export const submitMatchReview = async (
 
     const existing = await Review.findOne({ where: { matchId, userId } });
     if (existing) {
-      return res
-        .status(409)
-        .json({ message: "You have already reviewed this match." });
+      return res.status(409).json({ message: "You have already reviewed this match." });
     }
 
     const analysis = await analyzeMatchFeedback(comment);
@@ -52,10 +47,7 @@ export const submitMatchReview = async (
   }
 };
 
-export const getMatchReviews = async (
-  req: AuthenticatedRequest,
-  res: Response
-) => {
+export const getMatchReviews = async (req: AuthenticatedRequest, res: Response) => {
   try {
     const matchId = req.params.matchId;
 

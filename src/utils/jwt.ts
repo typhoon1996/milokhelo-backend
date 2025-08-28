@@ -17,13 +17,13 @@ export const generateAccessToken = (userId: string) => {
 export const generateRefreshToken = (userId: string, familyId?: string) => {
   const tokenId = uuidv4();
   const tokenFamilyId = familyId || uuidv4();
-  
+
   const payload: RefreshTokenPayload = {
     userId,
     familyId: tokenFamilyId,
     tokenId,
   };
-  
+
   return {
     token: jwt.sign(payload, REFRESH_SECRET, { expiresIn: "7d" }),
     familyId: tokenFamilyId,

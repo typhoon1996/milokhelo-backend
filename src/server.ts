@@ -1,11 +1,11 @@
-import app from "./app";
+import app from "@/app";
 import { createServer } from "http";
 import { Server } from "socket.io";
-import { initSocket } from "./sockets/index";
-import { connectDB } from "./config/database";
-import { initDb } from "./models";
-import { startMatchReminderJob } from "./jobs/matchReminder.job";
-import { startTeamInviteReminderJob } from "./jobs/teamInviteReminder.job";
+import { initSocket } from "@/sockets/index";
+import { connectDB } from "@/config/database";
+import { initDb } from "@/models";
+import { startMatchReminderJob } from "@/jobs/matchReminder.job";
+import { startTeamInviteReminderJob } from "@/jobs/teamInviteReminder.job";
 const PORT = process.env.PORT || 3000;
 
 const httpServer = createServer(app);

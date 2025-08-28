@@ -1,10 +1,10 @@
 import { Server, Socket } from "socket.io";
 import jwt from "jsonwebtoken";
-import { Message } from "../models/Message";
-import { Notification } from "../models/Notification";
+import { Message } from "@/models/Message";
+import { Notification } from "@/models/Notification";
 import { Op } from "sequelize";
-import { Participant } from "../models/Participant";
-import { eventBus } from "../events/eventBus";
+import { Participant } from "@/models/Participant";
+import { eventBus } from "@/events/eventBus";
 
 let ioInstance: Server;
 
@@ -55,7 +55,7 @@ export const initSocket = (io: Server) => {
 
         io.to(conversationId).emit("newMessage", newMessage);
       } catch (err) {
-        socket.emit("chatError", { message: "Failed to send message" });
+        socket.emit("chatError", { message: "Failed to send message", err });
       }
     });
     // Typing start
@@ -83,7 +83,7 @@ export const initSocket = (io: Server) => {
 // ✅ Exportable utility to send real-time notifications
 export const sendNotification = async (
   userId: string,
-  payload: { message: string; type: string }
+  payload: { message: string; type: string },
 ) => {
   const notification = await Notification.create({
     userId,

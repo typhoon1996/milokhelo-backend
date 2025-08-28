@@ -1,11 +1,8 @@
 import { Request, Response } from "express";
-import { AuthenticatedRequest } from "../middlewares/auth.middleware";
-import { Notification } from "../models/Notification";
+import { AuthenticatedRequest } from "@/middlewares/auth.middleware";
+import { Notification } from "@/models/Notification";
 
-export const getNotifications = async (
-  req: AuthenticatedRequest,
-  res: Response
-) => {
+export const getNotifications = async (req: AuthenticatedRequest, res: Response) => {
   try {
     const notifications = await Notification.findAll({
       where: { userId: req.user?.id },
@@ -17,23 +14,17 @@ export const getNotifications = async (
   }
 };
 
-export const markNotificationsRead = async (
-  req: AuthenticatedRequest,
-  res: Response
-) => {
+export const markNotificationsRead = async (req: AuthenticatedRequest, res: Response) => {
   const { notificationIds = [] } = req.body;
   try {
     if (notificationIds.length === 0) {
-      await Notification.update(
-        { read: true },
-        { where: { userId: req.user?.id } }
-      );
+      await Notification.update({ read: true }, { where: { userId: req.user?.id } });
     } else {
       await Notification.update(
         { read: true },
         {
           where: { userId: req.user?.id, id: notificationIds },
-        }
+        },
       );
     }
     res.status(204).send();

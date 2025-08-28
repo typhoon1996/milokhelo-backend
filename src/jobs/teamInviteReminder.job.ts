@@ -1,9 +1,9 @@
 import cron from "node-cron";
 import { Op } from "sequelize";
-import { TeamInvite } from "../models/TeamInvite";
-import { User } from "../models/User";
-import { sendNotification } from "../sockets";
-import { emailQueue } from "../queues/email.queue";
+import { TeamInvite } from "@/models/TeamInvite";
+import { User } from "@/models/User";
+import { sendNotification } from "@/sockets";
+import { emailQueue } from "@/queues/email.queue";
 import { subDays } from "date-fns";
 
 export const startTeamInviteReminderJob = () => {
@@ -38,10 +38,7 @@ export const startTeamInviteReminderJob = () => {
             });
           }
         } catch (inviteError) {
-          console.error(
-            `Error processing invite for user ${invite.invitedUserId}:`,
-            inviteError
-          );
+          console.error(`Error processing invite for user ${invite.invitedUserId}:`, inviteError);
         }
       }
       console.log("Team invite reminder job completed."); // Add logging

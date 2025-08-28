@@ -1,13 +1,7 @@
-import {
-  Table,
-  Column,
-  ForeignKey,
-  DataType,
-  BelongsTo,
-} from "sequelize-typescript";
-import { BaseModel } from "./BaseModel";
-import { Conversation } from "./Conversation";
-import { User } from "./User";
+import { Table, Column, ForeignKey, DataType, BelongsTo } from "sequelize-typescript";
+import { BaseModel } from "@/models/BaseModel";
+import { Conversation } from "@/models/Conversation";
+import { User } from "@/models/User";
 
 @Table({
   tableName: "participants",

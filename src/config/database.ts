@@ -1,17 +1,17 @@
 import { Sequelize } from "sequelize-typescript";
-import { User } from "../models/User";
+import { User } from "@/models/User";
 import dotenv from "dotenv";
-import { Connection } from "../models/Connection";
-import { Match } from "../models/Match";
-import { MatchParticipant } from "../models/MatchParticipant";
-import { Team } from "../models/Team";
-import { TeamMember } from "../models/TeamMember";
-import { Review } from "../models/Review";
-import { Participant } from "../models/Participant";
-import { Message } from "../models/Message";
-import { Conversation } from "../models/Conversation";
-import { Notification } from "../models/Notification";
-import { RefreshToken } from "../models/RefreshToken";
+import { Connection } from "@/models/Connection";
+import { Match } from "@/models/Match";
+import { MatchParticipant } from "@/models/MatchParticipant";
+import { Team } from "@/models/Team";
+import { TeamMember } from "@/models/TeamMember";
+import { Review } from "@/models/Review";
+import { Participant } from "@/models/Participant";
+import { Message } from "@/models/Message";
+import { Conversation } from "@/models/Conversation";
+import { Notification } from "@/models/Notification";
+import { RefreshToken } from "@/models/RefreshToken";
 
 dotenv.config();
 

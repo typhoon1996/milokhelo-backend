@@ -1,11 +1,11 @@
 import { Request, Response } from "express";
-import { AuthenticatedRequest } from "../middlewares/auth.middleware";
-import { Team, TeamInvite } from "../models/Team";
-import { TeamMember } from "../models/TeamMember";
+import { AuthenticatedRequest } from "@/middlewares/auth.middleware";
+import { Team, TeamInvite } from "@/models/Team";
+import { TeamMember } from "@/models/TeamMember";
 import { Op } from "sequelize";
-import { User } from "../models/User";
-import { sendNotification } from "../sockets";
-import { emailQueue } from "../queues/email.queue";
+import { User } from "@/models/User";
+import { sendNotification } from "@/sockets";
+import { emailQueue } from "@/queues/email.queue";
 
 export const createTeam = async (req: AuthenticatedRequest, res: Response) => {
   try {
@@ -69,10 +69,7 @@ export const listTeams = async (req: AuthenticatedRequest, res: Response) => {
   }
 };
 
-export const getTeamDetails = async (
-  req: AuthenticatedRequest,
-  res: Response
-) => {
+export const getTeamDetails = async (req: AuthenticatedRequest, res: Response) => {
   try {
     const { id } = req.params;
 
@@ -131,9 +128,7 @@ export const joinTeam = async (req: AuthenticatedRequest, res: Response) => {
     });
 
     if (existing) {
-      return res
-        .status(409)
-        .json({ message: "You have already requested to join this team." });
+      return res.status(409).json({ message: "You have already requested to join this team." });
     }
 
     // Optionally: check if public and auto-join

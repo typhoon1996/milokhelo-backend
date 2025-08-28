@@ -1,6 +1,6 @@
 import { Worker } from "bullmq";
-import { redisConnection } from "./redis";
-import { sendEmail } from "../utils/email";
+import { redisConnection } from "@/config/redis";
+import { sendEmail } from "@/utils/email";
 
 new Worker(
   "emailQueue",
@@ -8,5 +8,5 @@ new Worker(
     const { to, subject, html } = job.data;
     await sendEmail({ to, subject, html });
   },
-  { connection: redisConnection }
+  { connection: redisConnection },
 );

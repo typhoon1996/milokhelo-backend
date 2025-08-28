@@ -10,8 +10,8 @@ import {
   UpdatedAt,
 } from "sequelize-typescript";
 import { v4 as uuidv4 } from "uuid";
-import { Conversation } from "./Conversation";
-import { User } from "./User";
+import { Conversation } from "@/models/Conversation";
+import { User } from "@/models/User";
 
 @Table
 export class Message extends Model {

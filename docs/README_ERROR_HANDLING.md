@@ -7,9 +7,10 @@ I have successfully implemented a comprehensive, production-ready centralized er
 ## ✨ What's Been Implemented
 
 ### 1. **Custom Error Classes** (`src/utils/AppError.ts`)
+
 - `AppError` - Base error class with status codes and operational flags
 - `ValidationError` (400) - For validation failures
-- `UnauthorizedError` (401) - For authentication issues  
+- `UnauthorizedError` (401) - For authentication issues
 - `NotFoundError` (404) - For missing resources
 - `ConflictError` (409) - For duplicate resources
 - `TooManyRequestsError` (429) - For rate limiting
@@ -17,17 +18,20 @@ I have successfully implemented a comprehensive, production-ready centralized er
 - `ServiceUnavailableError` (503) - For service issues
 
 ### 2. **Async Error Wrapper** (`src/utils/catchAsync.ts`)
+
 - Automatically catches async errors in controllers
 - Forwards errors to global error handler
 - Eliminates boilerplate try-catch code
 
 ### 3. **Global Error Handler** (`src/middlewares/errorHandler.ts`)
+
 - Handles all error types consistently
 - Provides uniform JSON error responses
 - Environment-based logging (detailed in dev, secure in prod)
 - Handles Sequelize, JWT, validation, and custom errors
 
 ### 4. **Updated Controllers**
+
 - **Auth Controller**: All functions now use `catchAsync` and custom errors
 - **User Controller**: All functions now use `catchAsync` and custom errors
 - Consistent response format with `success` field
@@ -36,6 +40,7 @@ I have successfully implemented a comprehensive, production-ready centralized er
 ## 🔧 How to Use
 
 ### In Controllers (Before):
+
 ```typescript
 export const getUser = async (req: Request, res: Response) => {
   try {
@@ -52,6 +57,7 @@ export const getUser = async (req: Request, res: Response) => {
 ```
 
 ### In Controllers (After):
+
 ```typescript
 export const getUser = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
   const user = await User.findByPk(req.params.id);
@@ -63,6 +69,7 @@ export const getUser = catchAsync(async (req: Request, res: Response, next: Next
 ```
 
 ### Error Response Format:
+
 ```json
 {
   "success": false,
@@ -86,6 +93,7 @@ export const getUser = catchAsync(async (req: Request, res: Response, next: Next
 ## 📁 Files Created/Modified
 
 ### New Files:
+
 - `src/utils/AppError.ts` - Custom error classes
 - `src/utils/catchAsync.ts` - Async error wrapper
 - `src/middlewares/errorHandler.ts` - Global error handler
@@ -93,6 +101,7 @@ export const getUser = catchAsync(async (req: Request, res: Response, next: Next
 - `ERROR_HANDLING_SUMMARY.md` - Implementation summary
 
 ### Updated Files:
+
 - `src/app.ts` - Added global error handling
 - `src/controllers/auth.controller.ts` - All functions updated
 - `src/controllers/user.controller.ts` - All functions updated
@@ -100,6 +109,7 @@ export const getUser = catchAsync(async (req: Request, res: Response, next: Next
 ## 🧪 Testing
 
 Run the test script to verify everything works:
+
 ```bash
 npm run build
 node test-error-handling.js
@@ -114,21 +124,24 @@ node test-error-handling.js
 ## 🔄 Migration Guide
 
 ### Step 1: Import utilities
+
 ```typescript
-import { catchAsync } from '../utils/catchAsync';
-import { ValidationError, NotFoundError } from '../utils/AppError';
+import { catchAsync } from "../utils/catchAsync";
+import { ValidationError, NotFoundError } from "../utils/AppError";
 ```
 
 ### Step 2: Wrap controllers
+
 ```typescript
 // Before
 export const functionName = async (req, res) => { ... };
 
-// After  
+// After
 export const functionName = catchAsync(async (req, res, next) => { ... });
 ```
 
 ### Step 3: Replace error responses
+
 ```typescript
 // Before
 if (!user) return res.status(404).json({ message: "Not found" });
@@ -138,6 +151,7 @@ if (!user) throw new NotFoundError("User not found");
 ```
 
 ### Step 4: Remove try-catch blocks
+
 ```typescript
 // Before
 try {

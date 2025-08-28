@@ -6,8 +6,21 @@ import dotenv from "dotenv";
 import compression from "compression";
 import cookieParser from "cookie-parser";
 
-import { errorHandler, notFound, handleUnhandledRejection, handleUncaughtException } from "./middlewares/errorHandler";
-import bullBoardAdapter from "./queues/queue-dashboard";
+// ---------- Routes ----------
+import authRoutes from "@/routes/auth.routes";
+import userRoutes from "@/routes/user.routes";
+import matchRoutes from "@/routes/match.routes";
+import teamRoutes from "@/routes/team.routes";
+import reviewRoutes from "@/routes/review.routes";
+import chatRoutes from "@/routes/chat.routes";
+import notificationRoutes from "@/routes/notification.routes";
+import {
+  errorHandler,
+  notFound,
+  handleUnhandledRejection,
+  handleUncaughtException,
+} from "@/middlewares/errorHandler";
+import bullBoardAdapter from "@/queues/queue-dashboard";
 
 // Load environment variables
 dotenv.config();
@@ -19,7 +32,7 @@ app.use(
   cors({
     origin: process.env.CORS_ORIGIN || "http://localhost:3000",
     credentials: true,
-  })
+  }),
 );
 app.use(helmet({ crossOriginResourcePolicy: false }));
 app.use(morgan("dev"));
@@ -31,15 +44,6 @@ app.use(compression());
 app.get("/health", (_req, res) => {
   res.status(200).json({ status: "OK", service: "MiloKhelo API" });
 });
-
-// ---------- Routes ----------
-import authRoutes from "./routes/auth.routes";
-import userRoutes from "./routes/user.routes";
-import matchRoutes from "./routes/match.routes";
-import teamRoutes from "./routes/team.routes";
-import reviewRoutes from "./routes/review.routes";
-import chatRoutes from "./routes/chat.routes";
-import notificationRoutes from "./routes/notification.routes";
 
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/users", userRoutes);
@@ -57,7 +61,7 @@ app.use(notFound);
 app.use(errorHandler);
 
 // ---------- Global Error Handling ----------
-process.on('unhandledRejection', handleUnhandledRejection);
-process.on('uncaughtException', handleUncaughtException);
+process.on("unhandledRejection", handleUnhandledRejection);
+process.on("uncaughtException", handleUncaughtException);
 
 export default app;

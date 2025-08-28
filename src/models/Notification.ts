@@ -1,12 +1,6 @@
-import {
-  Table,
-  Column,
-  ForeignKey,
-  DataType,
-  BelongsTo,
-} from "sequelize-typescript";
-import { BaseModel } from "./BaseModel";
-import { User } from "./User";
+import { Table, Column, ForeignKey, DataType, BelongsTo } from "sequelize-typescript";
+import { BaseModel } from "@/models/BaseModel";
+import { User } from "@/models/User";
 
 export enum NotificationType {
   MATCH = "match",

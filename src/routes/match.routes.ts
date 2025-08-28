@@ -6,8 +6,8 @@ import {
   getMatchDetails,
   rsvpToMatch,
   cancelRsvpMatch,
-} from "../controllers/match.controller";
-import { authenticateJWT } from "../middlewares/auth.middleware";
+} from "@/controllers/match.controller";
+import { authenticateJWT } from "@/middlewares/auth.middleware";
 
 const router = Router();
 

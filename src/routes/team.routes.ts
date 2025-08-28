@@ -5,9 +5,9 @@ import {
   getTeamDetails,
   joinTeam,
   resend,
-} from "../controllers/team.controller";
-import { authenticateJWT } from "../middlewares/auth.middleware";
-import { isAdmin } from "../middlewares/role.middleware";
+} from "@/controllers/team.controller";
+import { authenticateJWT } from "@/middlewares/auth.middleware";
+import { isAdmin } from "@/middlewares/role.middleware";
 
 const router = Router();
 
