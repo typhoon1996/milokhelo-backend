@@ -2,12 +2,17 @@ import { Table, Column, ForeignKey, DataType, BelongsTo } from "sequelize-typesc
 import { BaseModel } from "@/models/BaseModel";
 import { User } from "@/models/User";
 
-export enum NotificationType {
-  MATCH = "match",
-  TEAM = "team",
-  CHAT = "chat",
-  GENERAL = "general",
-}
+/**
+ * Notification type values and type definition
+ */
+export const NotificationType = {
+  MATCH: "match",
+  TEAM: "team",
+  CHAT: "chat",
+  GENERAL: "general",
+} as const;
+
+export type NotificationType = (typeof NotificationType)[keyof typeof NotificationType];
 
 @Table({
   tableName: "notifications",

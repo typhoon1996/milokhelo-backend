@@ -1,7 +1,6 @@
 import express from "express";
 import { isAdmin } from "@/middlewares/role.middleware";
 import { TeamInvite } from "@/models/TeamInvite";
-import { Notification } from "@/models/Notification";
 import { emailQueue } from "@/queues/email.queue";
 
 const router = express.Router();

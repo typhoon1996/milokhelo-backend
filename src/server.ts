@@ -6,6 +6,7 @@ import { connectDB } from "@/config/database";
 import { initDb } from "@/models";
 import { startMatchReminderJob } from "@/jobs/matchReminder.job";
 import { startTeamInviteReminderJob } from "@/jobs/teamInviteReminder.job";
+
 const PORT = process.env.PORT || 3000;
 
 const httpServer = createServer(app);
@@ -19,14 +20,16 @@ const start = async () => {
   try {
     await connectDB(); // Sequelize init
     await initDb();
+
     httpServer.listen(PORT, () => {
       console.log(`🚀 MiloKhelo running on http://localhost:${PORT}`);
     });
+
     startMatchReminderJob();
     startTeamInviteReminderJob();
   } catch (err) {
     console.error("❌ Failed to start server:", err);
-    process.exit(1);
+    throw err; // Let the process manager handle it
   }
 };
 

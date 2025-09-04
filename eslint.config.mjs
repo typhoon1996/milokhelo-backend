@@ -17,10 +17,19 @@ const nodeGlobals = {
 
 export default [
   {
-    ignores: ["dist/**", "node_modules/**"],
+    ignores: [
+      "dist/**",
+      "node_modules/**",
+      "*.config.js",
+      "*.config.cjs",
+      "*.config.mjs",
+      "test-*.js", // ignore JS test files if you want
+    ],
   },
+
+  // ✅ TypeScript files
   {
-    files: ["**/*.{ts,js}"],
+    files: ["**/*.ts"],
     languageOptions: {
       parser: tseslint.parser,
       parserOptions: {
@@ -50,18 +59,12 @@ export default [
       import: importPlugin,
     },
     rules: {
-      // Base
       ...js.configs.recommended.rules,
-      // TS
       ...tseslint.configs.recommended.rules,
-      // Node (but without import resolution conflicts)
       ...nPlugin.configs["flat/recommended-module"].rules,
-      // Promises
       ...promisePlugin.configs.recommended.rules,
-      // Imports
       ...importPlugin.configs.recommended.rules,
 
-      // ✅ Fix: use import/no-unresolved instead of n/no-missing-import
       "import/no-unresolved": "error",
       "n/no-missing-import": "off",
 
@@ -73,6 +76,20 @@ export default [
       "promise/always-return": "off",
       "promise/catch-or-return": "warn",
       "prettier/prettier": "error",
+    },
+  },
+
+  // ✅ Plain JS files
+  {
+    files: ["**/*.js"],
+    languageOptions: {
+      ecmaVersion: "latest",
+      sourceType: "module",
+      globals: nodeGlobals,
+    },
+    rules: {
+      ...js.configs.recommended.rules,
+      "no-console": "off",
     },
   },
 ];

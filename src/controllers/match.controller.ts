@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { AuthenticatedRequest } from "@/middlewares/auth.middleware";
 import { Match } from "@/models/Match";
 import { MatchParticipant } from "@/models/MatchParticipant";
-import { Op } from "sequelize";
+import { Op, WhereOptions } from "sequelize";
 import { User } from "@/models/User";
 import { eventBus } from "@/events/eventBus";
 
@@ -35,18 +35,18 @@ export const getMatches = async (req: Request, res: Response) => {
   try {
     const { query, sport, skill, page = 1, limit = 10 } = req.query;
 
-    const filters: any = {};
+    const filters: WhereOptions<Match> = {}; // ✅ Properly typed
 
     if (query) {
       filters.title = { [Op.iLike]: `%${query}%` };
     }
 
     if (sport) {
-      filters.sport = sport;
+      filters.sport = sport as string;
     }
 
     if (skill) {
-      filters.skillLevel = skill;
+      filters.skillLevel = skill as string;
     }
 
     const offset = (Number(page) - 1) * Number(limit);
@@ -188,7 +188,15 @@ export const rsvpToMatch = async (req: AuthenticatedRequest, res: Response) => {
       await MatchParticipant.create({ userId, matchId });
     }
 
-    eventBus.emit("RSVP_CREATED", { userId, matchId });
+    const participant = await MatchParticipant.findOne({ where: { userId, matchId } });
+    if (participant) {
+      eventBus.emit("RSVP_CREATED", {
+        rsvpId: participant.id,
+        eventId: matchId,
+        userId: userId.toString(),
+        status: "going" as const,
+      });
+    }
 
     res.status(200).json({ message: "RSVP successful" });
   } catch (err) {

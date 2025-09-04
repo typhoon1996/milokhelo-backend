@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { Response } from "express";
 import { AuthenticatedRequest } from "@/middlewares/auth.middleware";
 import { Notification } from "@/models/Notification";
 
@@ -9,13 +9,14 @@ export const getNotifications = async (req: AuthenticatedRequest, res: Response)
       order: [["createdAt", "DESC"]],
     });
     res.json(notifications);
-  } catch (err) {
+  } catch {
     res.status(500).json({ message: "Server error" });
   }
 };
 
 export const markNotificationsRead = async (req: AuthenticatedRequest, res: Response) => {
-  const { notificationIds = [] } = req.body;
+  const { notificationIds = [] } = req.body as { notificationIds?: string[] };
+
   try {
     if (notificationIds.length === 0) {
       await Notification.update({ read: true }, { where: { userId: req.user?.id } });
@@ -28,7 +29,7 @@ export const markNotificationsRead = async (req: AuthenticatedRequest, res: Resp
       );
     }
     res.status(204).send();
-  } catch (err) {
+  } catch {
     res.status(500).json({ message: "Server error" });
   }
 };

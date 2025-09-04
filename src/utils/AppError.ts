@@ -1,8 +1,13 @@
 export class AppError extends Error {
   public readonly statusCode: number;
-  public readonly status: string;
+  public status: string; // Removed readonly to allow modification
   public readonly isOperational: boolean;
-  public errors?: any[];
+  public errors?: Array<{
+    field?: string;
+    message: string;
+    value?: unknown;
+    code?: string;
+  }>;
 
   constructor(message: string, statusCode: number = 500) {
     super(message);

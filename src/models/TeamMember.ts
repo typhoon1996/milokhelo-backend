@@ -3,10 +3,14 @@ import { BaseModel } from "@/models/BaseModel";
 import { User } from "@/models/User";
 import { Team } from "@/models/Team";
 
-export enum TeamMemberStatus {
-  PENDING = "pending",
-  JOINED = "joined",
-}
+const TeamMemberStatus = {
+  PENDING: "pending",
+  JOINED: "joined",
+} as const;
+
+type TeamMemberStatusType = (typeof TeamMemberStatus)[keyof typeof TeamMemberStatus];
+
+export { TeamMemberStatus, TeamMemberStatusType };
 
 @Table({
   tableName: "team_members",
@@ -33,5 +37,5 @@ export class TeamMember extends BaseModel {
     type: DataType.ENUM(...Object.values(TeamMemberStatus)),
     defaultValue: TeamMemberStatus.PENDING,
   })
-  declare status: TeamMemberStatus;
+  declare status: TeamMemberStatusType;
 }

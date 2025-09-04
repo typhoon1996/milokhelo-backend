@@ -10,11 +10,13 @@ import {
 import { User } from "@/models/User";
 import { BaseModel } from "@/models/BaseModel";
 
+/* eslint-disable no-unused-vars */
 export enum ConnectionStatus {
   PENDING = "pending",
   ACCEPTED = "accepted",
   REJECTED = "rejected",
 }
+/* eslint-enable no-unused-vars */
 
 @Table({
   tableName: "connections",

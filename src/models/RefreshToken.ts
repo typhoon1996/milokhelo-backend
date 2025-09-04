@@ -1,12 +1,4 @@
-import {
-  Table,
-  Column,
-  DataType,
-  AllowNull,
-  ForeignKey,
-  Index,
-  BelongsTo,
-} from "sequelize-typescript";
+import { Table, Column, DataType, AllowNull, ForeignKey, BelongsTo } from "sequelize-typescript";
 import { BaseModel } from "@/models/BaseModel";
 import { User } from "@/models/User";
 

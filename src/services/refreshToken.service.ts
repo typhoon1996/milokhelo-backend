@@ -1,6 +1,6 @@
 import { RefreshToken } from "@/models/RefreshToken";
 import { User } from "@/models/User";
-import { generateRefreshToken, generateTokenFamily, verifyRefreshToken } from "@/utils/jwt";
+import { generateRefreshToken, verifyRefreshToken } from "@/utils/jwt"; // removed unused generateTokenFamily
 import { Op } from "sequelize";
 
 export class RefreshTokenService {
@@ -12,7 +12,7 @@ export class RefreshTokenService {
     const expiresAt = new Date();
     expiresAt.setDate(expiresAt.getDate() + 7); // 7 days from now
 
-    const refreshToken = await RefreshToken.create({
+    await RefreshToken.create({
       token: tokenData.token,
       userId,
       familyId: tokenData.familyId,
@@ -33,10 +33,8 @@ export class RefreshTokenService {
    */
   static async validateToken(token: string) {
     try {
-      // Verify JWT signature and expiration
       const payload = verifyRefreshToken(token);
 
-      // Check if token exists in database and is valid
       const dbToken = await RefreshToken.findOne({
         where: { token },
         include: [{ model: User, as: "user" }],
@@ -51,8 +49,8 @@ export class RefreshTokenService {
         payload,
         dbToken,
       };
-    } catch (error) {
-      return null;
+    } catch {
+      return null; // removed unused `error`
     }
   }
 
@@ -63,7 +61,6 @@ export class RefreshTokenService {
     try {
       const payload = verifyRefreshToken(oldToken);
 
-      // Find the old token in database
       const oldDbToken = await RefreshToken.findOne({
         where: { token: oldToken },
       });
@@ -72,16 +69,12 @@ export class RefreshTokenService {
         throw new Error("Invalid or expired token");
       }
 
-      // Revoke the old token
       oldDbToken.revoke("rotated");
       await oldDbToken.save();
 
-      // Create new token with same family ID
-      const newTokenData = await this.createToken(payload.userId, payload.familyId);
-
-      return newTokenData;
-    } catch (error) {
-      throw new Error("Token rotation failed");
+      return await this.createToken(payload.userId, payload.familyId);
+    } catch {
+      throw new Error("Token rotation failed"); // removed unused `error`
     }
   }
 

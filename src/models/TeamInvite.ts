@@ -3,11 +3,15 @@ import { BaseModel } from "@/models/BaseModel";
 import { User } from "@/models/User";
 import { Team } from "@/models/Team";
 
-export enum InviteStatus {
-  PENDING = "pending",
-  ACCEPTED = "accepted",
-  REJECTED = "rejected",
-}
+const InviteStatus = {
+  PENDING: "pending",
+  ACCEPTED: "accepted",
+  REJECTED: "rejected",
+} as const;
+
+type InviteStatusType = (typeof InviteStatus)[keyof typeof InviteStatus];
+
+export { InviteStatus, InviteStatusType };
 
 @Table({
   tableName: "team_invites",
@@ -34,5 +38,5 @@ export class TeamInvite extends BaseModel {
     type: DataType.ENUM(...Object.values(InviteStatus)),
     defaultValue: InviteStatus.PENDING,
   })
-  declare status: InviteStatus;
+  declare status: InviteStatusType;
 }

@@ -7,6 +7,8 @@ export const initDb = async () => {
     console.log("🟢 Database connected & synced.");
   } catch (err) {
     console.error("🔴 Database connection error:", err);
-    process.exit(1);
+    throw new Error(
+      `Database connection failed: ${err instanceof Error ? err.message : "Unknown error"}`,
+    );
   }
 };

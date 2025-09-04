@@ -9,7 +9,6 @@ import {
   BelongsTo,
   CreatedAt,
   UpdatedAt,
-  HasMany,
 } from "sequelize-typescript";
 import { v4 as uuidv4 } from "uuid";
 import { User } from "@/models/User";
@@ -20,7 +19,7 @@ export class Team extends Model {
   @PrimaryKey
   @Default(() => uuidv4())
   @Column(DataType.UUID)
-  id!: string;
+  declare id: string;
 
   @Column(DataType.STRING)
   name!: string;
@@ -36,8 +35,8 @@ export class Team extends Model {
   creator!: User;
 
   @CreatedAt
-  createdAt!: Date;
+  declare createdAt: Date;
 
   @UpdatedAt
-  updatedAt!: Date;
+  declare updatedAt: Date;
 }
