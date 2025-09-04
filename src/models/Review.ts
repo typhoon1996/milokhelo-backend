@@ -19,7 +19,7 @@ export class Review extends Model {
   @PrimaryKey
   @Default(() => uuidv4())
   @Column(DataType.UUID)
-  id!: string;
+  declare id: string;
 
   @ForeignKey(() => User)
   @Column(DataType.UUID)
@@ -41,12 +41,20 @@ export class Review extends Model {
   @Column(DataType.TEXT)
   comment!: string;
 
+  /**
+   * AI-generated analysis of the review
+   */
   @Column(DataType.JSONB)
-  analysis?: any; // Optional AI-generated analysis
+  analysis?: {
+    sentiment?: "positive" | "negative" | "neutral";
+    keywords?: string[];
+    summary?: string;
+    // Add more specific fields as needed based on your analysis requirements
+  };
 
   @CreatedAt
-  createdAt!: Date;
+  declare createdAt: Date;
 
   @UpdatedAt
-  updatedAt!: Date;
+  declare updatedAt: Date;
 }

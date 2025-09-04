@@ -1,37 +1,24 @@
-import { Request, Response, NextFunction } from "express";
-
-type AsyncFunction = (req: Request, res: Response, next: NextFunction) => Promise<any>;
+import type { Request, Response, NextFunction, RequestHandler } from "express";
 
 /**
- * Wraps async functions to catch errors and forward them to Express error handling middleware
- * This eliminates the need for try-catch blocks in controllers
- * @param fn - The async function to wrap
- * @returns A wrapped function that catches errors and passes them to next()
- * @example
- * // Instead of:
- * export const getUser = async (req: Request, res: Response) => {
- *   try {
- *     const user = await User.findByPk(req.params.id);
- *     if (!user) return res.status(404).json({ message: 'User not found' });
- *     res.json(user);
- *   } catch (error) {
- *     res.status(500).json({ message: 'Internal server error' });
- *   }
- * };
- * // Use:
- * export const getUser = catchAsync(async (req: Request, res: Response) => {
- *   const user = await User.findByPk(req.params.id);
- *   if (!user) throw new NotFoundError('User not found');
- *   res.json(user);
- * });
+ * Type for async request handlers that automatically handles errors
  */
-export const catchAsync = (fn: AsyncFunction) => {
-  return (req: Request, res: Response, next: NextFunction) => {
-    Promise.resolve(fn(req, res, next)).catch(next);
+type AsyncRequestHandler<T = any> = (req: Request, res: Response, next: NextFunction) => Promise<T>;
+
+/**
+ * Wraps an async request handler to catch any errors and forward them to Express's error handling middleware
+ * @param fn The async request handler function to wrap
+ * @returns A new request handler that catches and forwards errors
+ */
+export const catchAsync = <T = any>(fn: AsyncRequestHandler<T>): RequestHandler => {
+  return (req: Request, res: Response, next: NextFunction): void => {
+    Promise.resolve(fn(req, res, next)).catch((error: unknown) => {
+      next(error);
+    });
   };
 };
 
 /**
- * Alternative syntax for better readability
+ * Alias for catchAsync for backward compatibility
  */
 export const asyncHandler = catchAsync;

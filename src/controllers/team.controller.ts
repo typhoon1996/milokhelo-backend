@@ -1,6 +1,7 @@
-import { Request, Response } from "express";
+import { Response } from "express";
 import { AuthenticatedRequest } from "@/middlewares/auth.middleware";
-import { Team, TeamInvite } from "@/models/Team";
+import { Team } from "@/models/Team";
+import { TeamInvite } from "@/models/TeamInvite";
 import { TeamMember } from "@/models/TeamMember";
 import { Op } from "sequelize";
 import { User } from "@/models/User";
@@ -32,9 +33,23 @@ export const createTeam = async (req: AuthenticatedRequest, res: Response) => {
 export const listTeams = async (req: AuthenticatedRequest, res: Response) => {
   try {
     const userId = req.user?.id!;
-    const { filter = "all", query, sport } = req.query;
+    const {
+      filter = "all",
+      query,
+      sport,
+    } = req.query as {
+      filter?: string;
+      query?: string;
+      sport?: string;
+    };
 
-    const where: any = {};
+    interface TeamWhereClause {
+      sport?: string;
+      name?: { [Op.iLike]: string };
+      [key: string]: any; // Allow other string keys for Sequelize
+    }
+
+    const where: TeamWhereClause = {};
     if (sport) where.sport = sport;
     if (query) where.name = { [Op.iLike]: `%${query}%` };
 
@@ -92,7 +107,7 @@ export const getTeamDetails = async (req: AuthenticatedRequest, res: Response) =
     }
 
     const members =
-      team.teamMembers?.map((member: any) => ({
+      team.teamMembers?.map((member: TeamMember & { user: User }) => ({
         id: member.user.id,
         name: member.user.name,
         email: member.user.email,

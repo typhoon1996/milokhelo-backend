@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { Response } from "express";
 import { AuthenticatedRequest } from "@/middlewares/auth.middleware";
 import { Participant } from "@/models/Participant";
 import { Conversation } from "@/models/Conversation";

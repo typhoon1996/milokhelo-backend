@@ -1,124 +1,138 @@
 import { Request, Response, NextFunction } from "express";
 import { AppError } from "@/utils/AppError";
 
+interface ValidationErrorItem {
+  path: string;
+  message: string;
+  value?: unknown;
+}
+
 interface ErrorResponse {
   success: false;
   statusCode: number;
   message: string;
   status: string;
   stack?: string;
-  errors?: any[];
+  errors?: ValidationErrorItem[];
   timestamp: string;
   path: string;
 }
 
 /**
- * Global error handling middleware
- * Handles all errors thrown in the application and sends consistent JSON responses
+ * Type guard for checking if error has a status field
  */
-export const errorHandler = (err: any, req: Request, res: Response, next: NextFunction) => {
-  // Create a new error object, copying all relevant properties
-  let error: any;
+function hasStatus(err: unknown): err is { status: number } {
+  return (
+    typeof err === "object" &&
+    err !== null &&
+    "status" in err &&
+    typeof (err as { status?: unknown }).status === "number"
+  );
+}
+
+/**
+ * Global error handling middleware
+ */
+/**
+ * Global error handling middleware
+ * @param err - The error object
+ * @param req - Express request object
+ * @param res - Express response object
+ * @param _next - Express next function (unused in error handling middleware)
+ */
+export const errorHandler = (
+  err: unknown,
+  req: Request,
+  res: Response,
+  _next: NextFunction, // Unused parameter - kept for Express middleware signature
+) => {
+  let error: AppError;
+
   if (err instanceof AppError) {
     error = new AppError(err.message, err.statusCode);
     error.status = err.status;
     error.errors = err.errors;
   } else if (err instanceof Error) {
-    error = new AppError(err.message, (err as any).statusCode || 500);
+    error = new AppError(err.message, (err as { statusCode?: number }).statusCode ?? 500);
     error.name = err.name;
     error.stack = err.stack;
-    // Copy any additional enumerable properties
     Object.assign(error, err);
   } else {
-    // If it's a plain object, just copy its properties
-    error = Object.assign({}, err);
+    error = new AppError("Unknown error", 500);
   }
 
   // Log error details
   logError(err, req);
 
-  // Handle Sequelize validation errors
-  if (err.name === "SequelizeValidationError") {
-    const message = "Validation failed";
-    const errors = err.errors.map((e: any) => ({
+  // Sequelize validation errors
+  if ((err as { name?: string }).name === "SequelizeValidationError") {
+    const seErrors = (err as { errors: ValidationErrorItem[] }).errors ?? [];
+    error = new AppError("Validation failed", 400);
+    error.errors = seErrors.map((e) => ({
       field: e.path,
       message: e.message,
       value: e.value,
     }));
-    error = new AppError(message, 400);
-    error.errors = errors;
   }
 
-  // Handle Sequelize unique constraint violations
-  if (err.name === "SequelizeUniqueConstraintError") {
-    const message = "Duplicate field value";
-    const errors = err.errors.map((e: any) => ({
+  if ((err as { name?: string }).name === "SequelizeUniqueConstraintError") {
+    const seErrors = (err as { errors: ValidationErrorItem[] }).errors ?? [];
+    error = new AppError("Duplicate field value", 409);
+    error.errors = seErrors.map((e) => ({
       field: e.path,
       message: `${e.path} already exists`,
       value: e.value,
     }));
-    error = new AppError(message, 409);
-    error.errors = errors;
   }
 
-  // Handle Sequelize foreign key constraint violations
-  if (err.name === "SequelizeForeignKeyConstraintError") {
-    const message = "Referenced resource does not exist";
-    error = new AppError(message, 400);
+  if ((err as { name?: string }).name === "SequelizeForeignKeyConstraintError") {
+    error = new AppError("Referenced resource does not exist", 400);
   }
 
-  // Handle Sequelize database connection errors
-  if (err.name === "SequelizeConnectionError" || err.name === "SequelizeHostNotFoundError") {
-    const message = "Database connection failed";
-    error = new AppError(message, 503);
+  if (
+    (err as { name?: string }).name === "SequelizeConnectionError" ||
+    (err as { name?: string }).name === "SequelizeHostNotFoundError"
+  ) {
+    error = new AppError("Database connection failed", 503);
   }
 
-  // Handle JWT errors
-  if (err.name === "JsonWebTokenError") {
-    const message = "Invalid token";
-    error = new AppError(message, 401);
+  // JWT errors
+  if ((err as { name?: string }).name === "JsonWebTokenError") {
+    error = new AppError("Invalid token", 401);
   }
 
-  if (err.name === "TokenExpiredError") {
-    const message = "Token expired";
-    error = new AppError(message, 401);
+  if ((err as { name?: string }).name === "TokenExpiredError") {
+    error = new AppError("Token expired", 401);
   }
 
-  // Handle multer file upload errors
-  if (err.code === "LIMIT_FILE_SIZE") {
-    const message = "File too large";
-    error = new AppError(message, 400);
+  // Multer errors
+  if ((err as { code?: string }).code === "LIMIT_FILE_SIZE") {
+    error = new AppError("File too large", 400);
   }
 
-  if (err.code === "LIMIT_UNEXPECTED_FILE") {
-    const message = "Unexpected file field";
-    error = new AppError(message, 400);
+  if ((err as { code?: string }).code === "LIMIT_UNEXPECTED_FILE") {
+    error = new AppError("Unexpected file field", 400);
   }
 
-  // Handle rate limiting errors
-  if (err.status === 429) {
-    const message = "Too many requests, please try again later";
-    error = new AppError(message, 429);
+  // Rate limiting
+  if (hasStatus(err) && err.status === 429) {
+    error = new AppError("Too many requests, please try again later", 429);
   }
 
-  // Handle validation errors from express-validator
-  if (err.type === "entity.parse.failed") {
-    const message = "Invalid JSON payload";
-    error = new AppError(message, 400);
+  // JSON parsing
+  if ((err as { type?: string }).type === "entity.parse.failed") {
+    error = new AppError("Invalid JSON payload", 400);
   }
 
-  // Handle missing required fields
-  if (err.message && err.message.includes("required")) {
-    const message = "Missing required fields";
-    error = new AppError(message, 400);
+  // Required fields
+  if ((err as { message?: string }).message?.includes("required")) {
+    error = new AppError("Missing required fields", 400);
   }
 
-  // Set default values if not set
   const statusCode = error.statusCode || 500;
   const message = error.message || "Internal Server Error";
   const status = error.status || "error";
 
-  // Prepare error response
   const errorResponse: ErrorResponse = {
     success: false,
     statusCode,
@@ -128,46 +142,41 @@ export const errorHandler = (err: any, req: Request, res: Response, next: NextFu
     path: req.originalUrl,
   };
 
-  // Add validation errors if they exist
   if (error.errors && Array.isArray(error.errors)) {
-    errorResponse.errors = error.errors;
+    errorResponse.errors = error.errors as ValidationErrorItem[];
   }
 
-  // Add stack trace only in development
   if (process.env.NODE_ENV === "development") {
-    errorResponse.stack = err.stack;
+    errorResponse.stack = error.stack;
   }
 
-  // Send error response
   res.status(statusCode).json(errorResponse);
 };
 
 /**
  * Log error details based on environment
  */
-function logError(err: any, req: Request): void {
+function logError(err: unknown, req: Request): void {
   const isDev = process.env.NODE_ENV === "development";
+  if (!(err instanceof Error)) return;
 
   if (isDev) {
-    // Development: Log detailed error information
-    console.error("🔥 Error Details:");
-    console.error("  Message:", err.message);
-    console.error("  Stack:", err.stack);
-    console.error("  URL:", req.originalUrl);
-    console.error("  Method:", req.method);
-    console.error("  IP:", req.ip);
-    console.error("  User Agent:", req.get("User-Agent"));
-    console.error("  Timestamp:", new Date().toISOString());
-    console.error("  Body:", req.body);
-    console.error("  Query:", req.query);
-    console.error("  Params:", req.params);
-    console.error("  Headers:", req.headers);
-    console.error("---");
+    console.error("🔥 Error Details:", {
+      message: err.message,
+      stack: err.stack,
+      url: req.originalUrl,
+      method: req.method,
+      ip: req.ip,
+      body: req.body,
+      query: req.query,
+      params: req.params,
+      headers: req.headers,
+      timestamp: new Date().toISOString(),
+    });
   } else {
-    // Production: Log minimal details for security
     console.error("🔥 Error:", {
       message: err.message,
-      statusCode: err.statusCode || 500,
+      statusCode: (err as { statusCode?: number }).statusCode ?? 500,
       url: req.originalUrl,
       method: req.method,
       ip: req.ip,
@@ -177,11 +186,9 @@ function logError(err: any, req: Request): void {
 }
 
 /**
- * 404 Not Found middleware
+ * 404 handler
  */
 export const notFound = (req: Request, res: Response) => {
-  const error = new AppError(`Route ${req.originalUrl} not found`, 404);
-
   res.status(404).json({
     success: false,
     statusCode: 404,
@@ -198,12 +205,7 @@ export const notFound = (req: Request, res: Response) => {
 export const handleUnhandledRejection = (err: Error) => {
   console.error("🔥 Unhandled Promise Rejection:", err);
   console.error("Stack:", err.stack);
-
-  // In production, you might want to exit the process
-  if (process.env.NODE_ENV === "production") {
-    console.error("🔥 Unhandled Promise Rejection detected. Exiting...");
-    process.exit(1);
-  }
+  throw err; // ✅ no process.exit
 };
 
 /**
@@ -212,8 +214,5 @@ export const handleUnhandledRejection = (err: Error) => {
 export const handleUncaughtException = (err: Error) => {
   console.error("🔥 Uncaught Exception:", err);
   console.error("Stack:", err.stack);
-
-  // Always exit on uncaught exceptions
-  console.error("🔥 Uncaught Exception detected. Exiting...");
-  process.exit(1);
+  throw err; // ✅ no process.exit
 };
